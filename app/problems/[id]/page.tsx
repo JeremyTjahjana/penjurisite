@@ -134,6 +134,13 @@ export default function ProblemDetailPage({
               <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-5 text-sm text-zinc-100">
                 <code>{problem.solution}</code>
               </pre>
+
+              <div className="mt-6 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-4">
+                <h3 className="text-base font-semibold uppercase tracking-wide text-zinc-900">
+                  Video Tutorial
+                </h3>
+                <p className="mt-2 text-sm text-zinc-600">Not available yet</p>
+              </div>
             </div>
           )}
         </div>

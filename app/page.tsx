@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const [visitorCount, setVisitorCount] = useState<number>(0);
@@ -148,6 +149,12 @@ export default function Home() {
             </li>
           </ul>
         </div>
+        <Link
+          href="/problems"
+          className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 max-w-40"
+        >
+          Lihat soal-soal →
+        </Link>
       </div>
     </section>
   );
