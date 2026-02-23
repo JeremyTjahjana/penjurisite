@@ -7,7 +7,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/Sidebar";
 
 const navItems = [
   { label: "Home", href: "/" },
