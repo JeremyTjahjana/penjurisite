@@ -34,7 +34,7 @@ export default function ProblemsPage() {
         </h1>
         <p className="mt-3 max-w-2xl text-base text-zinc-600">
           Latihan soal C++ untuk meningkatkan pemahaman konsep dasar
-          pemrograman. Klik pada kartu untuk melihat detail soal lengkap.
+          pemrograman. Klik kartunya (disarankan pake laptop atau desktop view)
         </p>
       </div>
 
