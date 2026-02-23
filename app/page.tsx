@@ -1,65 +1,154 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [visitorCount, setVisitorCount] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get current count from localStorage
+    const storedCount = localStorage.getItem("visitorCount");
+    const currentCount = storedCount ? parseInt(storedCount) : 0;
+
+    // Check if this is a new session
+    const hasVisited = sessionStorage.getItem("hasVisited");
+
+    if (!hasVisited) {
+      // New session - increment counter
+      const newCount = currentCount + 1;
+      localStorage.setItem("visitorCount", newCount.toString());
+      sessionStorage.setItem("hasVisited", "true");
+      setVisitorCount(newCount);
+    } else {
+      // Returning in same session - just display current count
+      setVisitorCount(currentCount);
+    }
+
+    setLoading(false);
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <section className="flex flex-1 flex-col gap-8 px-10 py-12">
+      <div>
+        <div className="mb-4 flex items-center gap-4">
+          <p className="text-sm font-medium uppercase tracking-[0.3em] text-zinc-400">
+            Welcome
           </p>
+          {/* <div className="rounded-full bg-blue-100 px-4 py-1 text-xs font-semibold text-blue-700">
+            {loading ? (
+              "Loading..."
+            ) : (
+              <>
+                Visitors: <span className="font-mono">{visitorCount}</span>
+              </>
+            )}
+          </div> */}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <h1 className="mt-3 text-3xl font-semibold text-zinc-900">
+          C/C++ Stuff
+        </h1>
+        <p className="mt-3 max-w-2xl text-base text-zinc-600">
+          Disini ku bakalan upload soal-soal kemarin buat latihan beserta solusi
+          yang sudah di acc ya ges, semoga bisa membantu kalian buat latihan dan
+          belajar lebih baik lagi. Jangan lupa buat latihan terus ya, biar makin
+          jago! Semangatttt!
+        </p>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-zinc-900">
+            Practice sites Recomendation!
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm text-zinc-600">
+            <li>
+              Goated C/C++ Practice Site:{" "}
+              <span>
+                {" "}
+                <a
+                  className="underline text-blue-600"
+                  href="https://tlx.toki.id/"
+                >
+                  Toki/TLX
+                </a>{" "}
+              </span>
+            </li>
+            <li>
+              Practice job interview problems{" "}
+              <span>
+                {" "}
+                <a
+                  className="underline text-blue-600"
+                  href="https://leetcode.com/"
+                >
+                  LeetCode
+                </a>{" "}
+              </span>
+            </li>
+            <li>
+              Game like problem solving sites:{" "}
+              <span>
+                {" "}
+                <a
+                  className="underline text-blue-600"
+                  href="https://www.codedex.io/"
+                >
+                  Codedex dan
+                </a>{" "}
+                <a
+                  className="underline text-blue-600"
+                  href="https://www.https://codecombat.com/play.io/"
+                >
+                  CodeCombat
+                </a>{" "}
+              </span>
+            </li>
+          </ul>
         </div>
-      </main>
-    </div>
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-zinc-900">
+            Youtube Recommendations!
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm text-zinc-600">
+            <li>
+              C++ Beginner Course:{" "}
+              <span>
+                {" "}
+                <a
+                  className="underline text-blue-600"
+                  href="https://youtube.com/playlist?list=PLZS-MHyEIRo4Ze0bbGB1WKBSNMPzi-eWI&si=L4gSpZrWprSAVc7w"
+                >
+                  Kelas Terbuka
+                </a>{" "}
+              </span>
+            </li>
+            <li>
+              C++ OOP :{" "}
+              <span>
+                {" "}
+                <a
+                  className="underline text-blue-600"
+                  href="https://youtube.com/playlist?list=PL43pGnjiVwgTJg7uz8KUGdXRdGKE0W_jN&si=bVvdxQXFOE_SAvev"
+                >
+                  Code Beauty
+                </a>{" "}
+              </span>
+            </li>
+            <li>
+              C++ Crash Course :{" "}
+              <span>
+                {" "}
+                <a
+                  className="underline text-blue-600"
+                  href="https://youtu.be/-TkoO8Z07hI?si=67vVwUO9s46Vy--X"
+                >
+                  BroCode
+                </a>{" "}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
   );
 }
