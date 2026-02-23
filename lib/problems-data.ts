@@ -244,40 +244,47 @@ BN`,
     ],
     solution: `#include <iostream>
 #include <vector>
-#include <algorithm>
+#include <iomanip>
 using namespace std;
 
-int main() {
+int main()
+{
     int N;
-    double M;
-    cin >> N >> M;
-    
-    vector<double> weights(N);
-    for (int i = 0; i < N; i++) {
-        cin >> weights[i];
-    }
-    
-    // Sort weights in descending order
-    sort(weights.begin(), weights.end(), greater<double>());
-    
-    double totalWeight = 0;
-    int count = 0;
-    
-    for (int i = 0; i < N; i++) {
-        totalWeight += weights[i];
-        count++;
-        
-        if (totalWeight >= M) {
-            cout << count << endl;
-            return 0;
+    cin >> N;
+
+    int num;
+    double sum = 0.0;
+    vector<double> numbers;
+
+    while (true)
+    {
+        cin >> num;
+        if (num == -1)
+            break;
+
+        if (num >= N)
+        {
+            sum += num;
+            numbers.push_back(num);
         }
     }
-    
-    // If we reach here, it's impossible
-    cout << -1 << endl;
-    
-    return 0;
-}`,
+
+    double average = numbers.empty() ? 0.0 : sum / numbers.size();
+
+    double ragamTotal = 0.0;
+    for (int i = 0; i < numbers.size(); i++)
+    {
+        ragamTotal += (numbers[i] - average) * (numbers[i] - average);
+    }
+
+    double realRagam = (numbers.size() > 1)
+                           ? ragamTotal / (numbers.size() - 1)
+                           : 0.0;
+
+    cout << fixed << setprecision(2);
+    cout << average << " " << realRagam << endl;
+}
+`,
   },
   "02b-hitung-usia": {
     id: "02b-hitung-usia",
@@ -328,92 +335,118 @@ G73626183`,
     ],
     solution: `#include <iostream>
 #include <unordered_map>
+#include <string>
+#include <cctype>
 #include <iomanip>
-#include <sstream>
 using namespace std;
 
-class Orang {
-protected:
-    char jenisKelamin;
+class orang
+{
+public:
+    char kelamin;
     int usia;
-public:
-    Orang(char jk = 'L', int u = 0) : jenisKelamin(jk), usia(u) {}
-    char getJenisKelamin() { return jenisKelamin; }
-    int getUsia() { return usia; }
 };
-
-class Pegawai : public Orang {
-private:
-    string nip;
+class pegawai : public orang
+{
+public:
     string nama;
-public:
-    Pegawai(string n, string nm, char jk, int u) : Orang(jk, u), nip(n), nama(nm) {}
+    string nip;
 };
-
-class Mhs : public Orang {
-private:
+class mhs : public orang
+{
+public:
     string nim;
-public:
-    Mhs(string n, char jk, int u) : Orang(jk, u), nim(n) {}
 };
 
-int main() {
-    int N;
-    cin >> N;
-    cin.ignore();
-    
-    unordered_map<string, Orang*> data;
-    
-    for (int i = 0; i < N; i++) {
-        string line;
-        getline(cin, line);
-        stringstream ss(line);
-        
-        string id1, id2, id3;
-        ss >> id1 >> id2 >> id3;
-        
-        if (id3.length() <= 2) {
-            // Mahasiswa: NIM JK Usia
-            char jk = id2[0];
-            int usia = stoi(id3);
-            data[id1] = new Mhs(id1, jk, usia);
-        } else {
-            // Pegawai: NIP Nama JK Usia
-            string id4;
-            ss >> id4;
-            char jk = id3[0];
-            int usia = stoi(id4);
-            data[id1] = new Pegawai(id1, id2, jk, usia);
+int main()
+{
+    int n; // banyak data diinput
+    cin >> n;
+
+    unordered_map<string, mhs> dataMhs;
+    unordered_map<string, pegawai> dataPegawai;
+    string temp;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> temp;
+        if (isdigit(temp[0]))
+        {
+            pegawai p;
+            p.nip = temp;
+            cin >> p.nama >> p.kelamin >> p.usia;
+            dataPegawai[p.nip] = p;
+        }
+        else
+        {
+            mhs m;
+            m.nim = temp;
+            cin >> m.kelamin >> m.usia;
+            dataMhs[m.nim] = m;
         }
     }
-    
-    int Q;
-    cin >> Q;
-    
-    int sumL = 0, countL = 0;
-    int sumP = 0, countP = 0;
-    
-    for (int i = 0; i < Q; i++) {
-        string id;
-        cin >> id;
-        
-        if (data.find(id) != data.end()) {
-            Orang* orang = data[id];
-            if (orang->getJenisKelamin() == 'L') {
-                sumL += orang->getUsia();
-                countL++;
-            } else {
-                sumP += orang->getUsia();
-                countP++;
+
+    int q;
+    cin >> q;
+    double lakiSum = 0, perempuanSum = 0, lakiCount = 0, perempuanCount = 0;
+    for (int i = 0; i < q; i++)
+    {
+        cin >> temp;
+        if (isdigit(temp[0]))
+        {
+            if (dataPegawai.count(temp))
+            {
+                char k = dataPegawai[temp].kelamin;
+                if (k == 'L' || k == 'l')
+                {
+                    lakiCount++;
+                    lakiSum += dataPegawai[temp].usia;
+                }
+                else if (k == 'P' || k == 'p')
+                {
+                    perempuanCount++;
+                    perempuanSum += dataPegawai[temp].usia;
+                }
+            }
+        }
+        else
+        {
+            if (dataMhs.count(temp))
+            {
+                char k = dataMhs[temp].kelamin;
+                if (k == 'L' || k == 'l')
+                {
+                    lakiCount++;
+                    lakiSum += dataMhs[temp].usia;
+                }
+                else if (k == 'P' || k == 'p')
+                {
+                    perempuanCount++;
+                    perempuanSum += dataMhs[temp].usia;
+                }
             }
         }
     }
-    
-    double avgL = countL > 0 ? (double)sumL / countL : 0.0;
-    double avgP = countP > 0 ? (double)sumP / countP : 0.0;
-    
-    cout << fixed << setprecision(2) << avgL << " " << avgP << endl;
-    
+    double rata_laki;
+    if (lakiCount > 0)
+    {
+        rata_laki = lakiSum / lakiCount;
+    }
+    else
+    {
+        rata_laki = 0.00;
+    }
+    double rata_perempuan;
+    if (perempuanCount > 0)
+    {
+        rata_perempuan = perempuanSum / perempuanCount;
+    }
+    else
+    {
+        rata_perempuan = 0.00;
+    }
+
+    cout << fixed << setprecision(2);
+    cout << rata_laki << " " << rata_perempuan << endl;
     return 0;
 }`,
   },
@@ -486,80 +519,81 @@ G641112222 3.07`,
       },
     ],
     solution: `#include <iostream>
+#include <string>
 #include <vector>
 #include <algorithm>
 #include <iomanip>
 using namespace std;
 
-class Mhs {
-public:
+class Mhs
+{
+private:
     string NIM;
-    int totalSKS;
-    double totalNilai;
-    
-    Mhs(string nim) : NIM(nim), totalSKS(0), totalNilai(0) {}
-    
-    double get_IPK() {
-        if (totalSKS == 0) return 0;
-        return totalNilai / totalSKS;
+    int nilai;
+    int jumsks;
+
+public:
+    Mhs(string nim) : NIM(nim), nilai(0), jumsks(0) {};
+    void tambah_nilai(int sks, char N)
+    {
+        if (N == 'A')
+            nilai += 4 * sks;
+        else if (N == 'B')
+            nilai += 3 * sks;
+        else if (N == 'C')
+            nilai += 2 * sks;
+        else if (N == 'D')
+            nilai += 1 * sks;
+        else if (N == 'E')
+            nilai += 0 * sks;
+        jumsks += sks;
     }
-    
-    void tambah_nilai(int sks, char N) {
-        int nilai = 0;
-        if (N == 'A') nilai = 4;
-        else if (N == 'B') nilai = 3;
-        else if (N == 'C') nilai = 2;
-        else if (N == 'D') nilai = 1;
-        else nilai = 0;
-        
-        totalNilai += sks * nilai;
-        totalSKS += sks;
+    string get_NIM() const
+    {
+        return NIM;
+    }
+    double get_IPK() const
+    {
+        if (jumsks == 0)
+            return 0.0;
+        return (double)nilai / jumsks;
     }
 };
 
-bool operator<(const Mhs& a, const Mhs& b) {
-    Mhs& m1 = const_cast<Mhs&>(a);
-    Mhs& m2 = const_cast<Mhs&>(b);
-    
-    double ipk1 = m1.get_IPK();
-    double ipk2 = m2.get_IPK();
-    
-    if (abs(ipk1 - ipk2) < 0.001) {
-        return m1.NIM < m2.NIM;
+bool comp(const Mhs &a, const Mhs &b)
+{
+    if (a.get_IPK() != b.get_IPK())
+    {
+        return a.get_IPK() > b.get_IPK();
     }
-    return ipk1 > ipk2;
+    return a.get_NIM() < b.get_NIM();
 }
 
-int main() {
+signed main()
+{
     int N, K;
     cin >> N >> K;
-    
-    vector<Mhs> mahasiswa;
-    
-    for (int i = 0; i < N; i++) {
+    vector<Mhs> daftar_mhs;
+    for (int i = 0; i < N; i++)
+    {
         string nim;
         int T;
         cin >> nim >> T;
-        
         Mhs mhs(nim);
-        
-        for (int j = 0; j < T; j++) {
+        for (int j = 0; j < T; j++)
+        {
             int sks;
-            char huruf;
-            cin >> sks >> huruf;
-            mhs.tambah_nilai(sks, huruf);
+            char N;
+            cin >> sks >> N;
+            mhs.tambah_nilai(sks, N);
         }
-        
-        mahasiswa.push_back(mhs);
+        daftar_mhs.push_back(mhs);
     }
-    
-    sort(mahasiswa.begin(), mahasiswa.end());
-    
-    for (int i = 0; i < K; i++) {
-        cout << mahasiswa[i].NIM << " " << fixed << setprecision(2) 
-             << mahasiswa[i].get_IPK() << endl;
+    sort(daftar_mhs.begin(), daftar_mhs.end(), comp);
+    for (int i = 0; i < K; i++)
+    {
+        cout << daftar_mhs[i].get_NIM() << " " << fixed << setprecision(2) << daftar_mhs[i].get_IPK() << "\n";
     }
-    
     return 0;
 }`,
   },
@@ -597,41 +631,35 @@ Lengkapi dan gunakan class Orang tersebut untuk mengolah data nama, usia, tinggi
       },
     ],
     solution: `#include <iostream>
+#include <string>
 #include <iomanip>
 using namespace std;
 
-class Orang {
-  private:
+class Orang
+{
+private:
     string nama;
     int usia;
     double tinggi, berat;
-    
-  public:
-    Orang(string n, int u, double t, double b) {
-        nama = n;
-        usia = u;
-        tinggi = t;
-        berat = b;
-    }
-    
-    void show() {
-        cout << nama << " | " << usia << " | " 
-             << fixed << setprecision(2) << tinggi << " | " 
-             << berat << endl;
+
+public:
+    Orang(string nama, int usia, double tinggi, double berat) : nama(nama), usia(usia), tinggi(tinggi), berat(berat) {}
+
+    void show()
+    {
+        cout << nama << " | " << usia << " | " << fixed << setprecision(2) << tinggi << " | " << berat << endl;
     }
 };
 
-int main() {
+int main()
+{
     string nama;
     int usia;
     double tinggi, berat;
-    
     getline(cin, nama);
     cin >> usia >> tinggi >> berat;
-    
     Orang orang(nama, usia, tinggi, berat);
     orang.show();
-    
     return 0;
 }`,
   },
@@ -671,70 +699,94 @@ X`,
       },
     ],
     solution: `#include <iostream>
+#include <string>
 #include <map>
 using namespace std;
 
-class AkunBank {
-private:
-    string noRek;
-    int batasTrans;
-    int saldo;
-    
+class AkunBank
+{
 public:
-    AkunBank() : noRek(""), batasTrans(0), saldo(0) {}
-    
-    AkunBank(string no, int batas, int saldoAwal) {
-        noRek = no;
-        batasTrans = batas;
-        saldo = saldoAwal;
-    }
-    
-    void setor(int jumlah) {
-        if (jumlah <= batasTrans) {
+    int saldo;
+    int batas;
+
+    AkunBank(int saldo_awal, int batas_transaksi)
+        : saldo(saldo_awal), batas(batas_transaksi) {}
+
+    void setor(int jumlah)
+    {
+        if (jumlah > 0 && jumlah <= batas)
+        {
             saldo += jumlah;
         }
     }
-    
-    void ambil(int jumlah) {
-        if (jumlah <= batasTrans && jumlah <= saldo) {
+
+    void ambil(int jumlah)
+    {
+        if (jumlah > 0 && jumlah <= batas && jumlah <= saldo)
+        {
             saldo -= jumlah;
         }
     }
-    
-    int getSaldo() {
-        return saldo;
-    }
 };
 
-int main() {
-    map<string, AkunBank> akun;
-    char operasi;
-    
-    while (cin >> operasi && operasi != 'X') {
-        if (operasi == 'C') {
-            string noRek;
+int main()
+{
+    map<string, AkunBank> bank;
+    char command;
+
+    while (cin >> command)
+    {
+        if (command == 'X')
+            break;
+
+        if (command == 'C')
+        {
+            string norek;
             int batas, saldo;
-            cin >> noRek >> batas >> saldo;
-            akun[noRek] = AkunBank(noRek, batas, saldo);
-        } else if (operasi == 'S') {
-            string noRek;
+
+            cin >> norek >> batas >> saldo;
+
+            bank.emplace(norek, AkunBank(saldo, batas));
+        }
+
+        else if (command == 'S')
+        {
+            string norek;
             int jumlah;
-            cin >> noRek >> jumlah;
-            akun[noRek].setor(jumlah);
-        } else if (operasi == 'T') {
-            string noRek;
+
+            cin >> norek >> jumlah;
+
+            auto it = bank.find(norek);
+            if (it != bank.end())
+            {
+                it->second.setor(jumlah);
+            }
+        }
+
+        else if (command == 'T')
+        {
+            string norek;
             int jumlah;
-            cin >> noRek >> jumlah;
-            akun[noRek].ambil(jumlah);
+
+            cin >> norek >> jumlah;
+
+            auto it = bank.find(norek);
+            if (it != bank.end())
+            {
+                it->second.ambil(jumlah);
+            }
         }
     }
-    
-    for (auto& pair : akun) {
-        cout << pair.first << " " << pair.second.getSaldo() << endl;
+
+    // Output sorted automatically (map is ordered)
+    for (const auto &[norek, akun] : bank)
+    {
+        cout << norek << " " << akun.saldo << endl;
     }
-    
+
     return 0;
-}`,
+}
+`,
   },
   "03c-batu-alam": {
     id: "03c-batu-alam",
@@ -775,44 +827,49 @@ PN KN`,
 #include <algorithm>
 using namespace std;
 
-class Persegi {
+class Persegi
+{
 private:
     int panjang;
     int lebar;
-    
+
 public:
     Persegi(int p, int l) : panjang(p), lebar(l) {}
-    
-    int hitungLuas() {
+
+    int hitungLuas() const
+    {
         return panjang * lebar;
     }
 };
 
-bool operator<(const Persegi& a, const Persegi& b) {
-    Persegi& p1 = const_cast<Persegi&>(a);
-    Persegi& p2 = const_cast<Persegi&>(b);
-    return p1.hitungLuas() < p2.hitungLuas();
-}
-
-int main() {
+int main()
+{
     int N, K;
     cin >> N >> K;
-    
+
     vector<Persegi> batu;
-    
-    for (int i = 0; i < N; i++) {
+    vector<int> luasList;
+
+    for (int i = 0; i < N; i++)
+    {
         int p, l;
         cin >> p >> l;
-        batu.push_back(Persegi(p, l));
+
+        Persegi batuBaru(p, l);
+        batu.push_back(batuBaru);
+
+        luasList.push_back(batuBaru.hitungLuas());
     }
-    
-    sort(batu.begin(), batu.end());
-    
-    for (int i = 0; i < K; i++) {
-        cout << batu[i].hitungLuas() << endl;
+
+    sort(luasList.begin(), luasList.end());
+
+    for (int i = 0; i < K; i++)
+    {
+        cout << luasList[i] << endl;
     }
-    
+
     return 0;
-}`,
+}
+`,
   },
 };
