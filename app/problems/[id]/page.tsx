@@ -3,17 +3,35 @@
 import { use, useState, useEffect } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import { getProblemById, Problem } from "@/lib/problems";
+import { getCommentsByProblem, Comment } from "@/lib/comments";
+import { toast } from "react-hot-toast";
+import {
+  addCommentAction,
+  addReplyAction,
+  deleteCommentAction,
+} from "@/lib/comments-actions";
 
 export default function ProblemDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { user } = useUser();
   const [showSolution, setShowSolution] = useState(false);
   const [copied, setCopied] = useState(false);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentContent, setCommentContent] = useState("");
+  const [submittingComment, setSubmittingComment] = useState(false);
+  const [commentsLoading, setCommentsLoading] = useState(true);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [submittingReply, setSubmittingReply] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
+  const [deletingComment, setDeletingComment] = useState(false);
 
   const { id } = use(params);
 
@@ -24,6 +42,16 @@ export default function ProblemDetailPage({
       setLoading(false);
     };
     fetchProblem();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      setCommentsLoading(true);
+      const data = await getCommentsByProblem(id);
+      setComments(data);
+      setCommentsLoading(false);
+    };
+    fetchComments();
   }, [id]);
 
   if (loading) {
@@ -44,6 +72,80 @@ export default function ProblemDetailPage({
     await navigator.clipboard.writeText(problem.solution);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!user) {
+      toast.error("Anda harus login untuk berkomentar");
+      return;
+    }
+
+    if (!commentContent.trim()) {
+      toast.error("Komentar tidak boleh kosong");
+      return;
+    }
+
+    setSubmittingComment(true);
+
+    const newComment = await addCommentAction(id, commentContent);
+
+    if (newComment) {
+      setComments([newComment, ...comments]);
+      setCommentContent("");
+      toast.success("Komentar berhasil ditambahkan!");
+    } else {
+      toast.error("Gagal menambahkan komentar");
+    }
+
+    setSubmittingComment(false);
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    setConfirmingDelete(commentId);
+  };
+
+  const handleSubmitReply = async (
+    e: React.FormEvent,
+    parentCommentId: string,
+  ) => {
+    e.preventDefault();
+
+    if (!user) {
+      toast.error("Anda harus login untuk membalas komentar");
+      return;
+    }
+
+    if (!replyContent.trim()) {
+      toast.error("Balasan tidak boleh kosong");
+      return;
+    }
+
+    setSubmittingReply(true);
+
+    const newReply = await addReplyAction(id, parentCommentId, replyContent);
+
+    if (newReply) {
+      // Update comments tree with new reply
+      const updatedComments = comments.map((comment) => {
+        if (comment.id === parentCommentId) {
+          return {
+            ...comment,
+            replies: [...(comment.replies || []), newReply],
+          };
+        }
+        return comment;
+      });
+      setComments(updatedComments);
+      setReplyContent("");
+      setReplyingTo(null);
+      toast.success("Balasan berhasil ditambahkan!");
+    } else {
+      toast.error("Gagal menambahkan balasan");
+    }
+
+    setSubmittingReply(false);
   };
 
   return (
@@ -226,7 +328,253 @@ export default function ProblemDetailPage({
             </div>
           )}
         </div>
+
+        {/* Comments Section */}
+        <div className="mt-12 border-t border-zinc-200 pt-8">
+          <h2 className="mb-6 text-2xl font-semibold text-zinc-900">
+            Komentar ({comments.length})
+          </h2>
+
+          {/* Comment Form - Only for Logged In Users */}
+          {user ? (
+            <form onSubmit={handleSubmitComment} className="mb-8">
+              <div className="rounded-lg border-2 border-zinc-200 bg-white p-4">
+                <p className="mb-3 text-sm text-zinc-600">
+                  Berkomentar sebagai{" "}
+                  <span className="font-semibold">{user.firstName}</span>
+                </p>
+                <textarea
+                  value={commentContent}
+                  onChange={(e) => setCommentContent(e.target.value)}
+                  placeholder="Tulis komentar Anda di sini..."
+                  className="w-full rounded border border-zinc-300 p-3 font-sans text-sm focus:border-blue-500 focus:outline-none"
+                  rows={3}
+                  disabled={submittingComment}
+                />
+                <button
+                  type="submit"
+                  disabled={submittingComment || !commentContent.trim()}
+                  className="mt-3 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition hover:bg-blue-700 disabled:bg-zinc-400"
+                >
+                  {submittingComment ? "Mengirim..." : "Kirim Komentar"}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="mb-8 rounded-lg border-2 border-yellow-200 bg-yellow-50 p-4">
+              <p className="text-sm text-yellow-800">
+                <Link
+                  href="/sign-in"
+                  className="font-semibold text-blue-600 hover:underline"
+                >
+                  Masuk
+                </Link>{" "}
+                untuk menambahkan komentar
+              </p>
+            </div>
+          )}
+
+          {/* Comments List */}
+          {commentsLoading ? (
+            <div className="text-center py-8">
+              <p className="text-zinc-600">Memuat komentar...</p>
+            </div>
+          ) : comments.length === 0 ? (
+            <div className="rounded-lg bg-zinc-50 p-8 text-center">
+              <p className="text-zinc-600">
+                Belum ada komentar. Jadilah yang pertama berkomentar!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <div key={comment.id} className="space-y-3">
+                  {/* Main Comment */}
+                  <div className="rounded-lg border border-zinc-200 bg-white p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="font-semibold text-zinc-900">
+                          {comment.userName}
+                        </p>
+                        <p className="text-xs text-zinc-500">
+                          {new Date(comment.createdAt).toLocaleDateString(
+                            "id-ID",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
+                        </p>
+                      </div>
+                      {user?.id === comment.userId && (
+                        <button
+                          onClick={() => handleDeleteComment(comment.id)}
+                          className="ml-2 text-xs text-red-600 hover:text-red-800 hover:underline"
+                        >
+                          Hapus
+                        </button>
+                      )}
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-700">
+                      {comment.content}
+                    </p>
+                    {user && (
+                      <button
+                        onClick={() =>
+                          setReplyingTo(
+                            replyingTo === comment.id ? null : comment.id,
+                          )
+                        }
+                        className="mt-3 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        {replyingTo === comment.id ? "Batal" : "Balas"}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Reply Form */}
+                  {replyingTo === comment.id && user && (
+                    <form
+                      onSubmit={(e) => handleSubmitReply(e, comment.id)}
+                      className="ml-6 space-y-2"
+                    >
+                      <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+                        <p className="mb-2 text-xs text-zinc-600">
+                          Membalas {comment.userName}
+                        </p>
+                        <textarea
+                          value={replyContent}
+                          onChange={(e) => setReplyContent(e.target.value)}
+                          placeholder="Tulis balasan Anda..."
+                          className="w-full rounded border border-zinc-300 p-2 font-sans text-sm focus:border-blue-500 focus:outline-none"
+                          rows={2}
+                          disabled={submittingReply}
+                        />
+                        <div className="mt-2 flex gap-2">
+                          <button
+                            type="submit"
+                            disabled={submittingReply || !replyContent.trim()}
+                            className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:bg-zinc-400"
+                          >
+                            {submittingReply ? "Mengirim..." : "Kirim"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReplyingTo(null);
+                              setReplyContent("");
+                            }}
+                            className="rounded bg-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-400"
+                          >
+                            Batal
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* Replies */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="ml-6 space-y-3 border-l-2 border-zinc-200 pl-4">
+                      {comment.replies.map((reply) => (
+                        <div
+                          key={reply.id}
+                          className="rounded-lg border border-zinc-200 bg-zinc-50 p-3"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="text-sm font-semibold text-zinc-900">
+                                {reply.userName}
+                              </p>
+                              <p className="text-xs text-zinc-500">
+                                {new Date(reply.createdAt).toLocaleDateString(
+                                  "id-ID",
+                                  {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                )}
+                              </p>
+                            </div>
+                            {user?.id === reply.userId && (
+                              <button
+                                onClick={() => handleDeleteComment(reply.id)}
+                                className="ml-2 text-xs text-red-600 hover:text-red-800 hover:underline"
+                              >
+                                Hapus
+                              </button>
+                            )}
+                          </div>
+                          <p className="mt-2 whitespace-pre-wrap text-xs text-zinc-700">
+                            {reply.content}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Confirmation Card Modal */}
+      {confirmingDelete && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/50"
+            onClick={() => setConfirmingDelete(null)}
+          />
+          {/* Confirmation Card */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="relative w-96 rounded-lg bg-white p-6 shadow-2xl">
+              <h3 className="mb-2 text-lg font-semibold text-zinc-900">
+                Hapus Komentar
+              </h3>
+              <p className="mb-6 text-sm text-zinc-600">
+                Apakah Anda yakin ingin menghapus komentar ini? Tindakan ini
+                tidak dapat dibatalkan.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setConfirmingDelete(null)}
+                  className="flex-1 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={async () => {
+                    setDeletingComment(true);
+                    const success = await deleteCommentAction(confirmingDelete);
+                    if (success) {
+                      setComments(
+                        comments.filter((c) => c.id !== confirmingDelete),
+                      );
+                      toast.success("Komentar berhasil dihapus!");
+                    } else {
+                      toast.error("Gagal menghapus komentar");
+                    }
+                    setConfirmingDelete(null);
+                    setDeletingComment(false);
+                  }}
+                  disabled={deletingComment}
+                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:bg-red-400"
+                >
+                  {deletingComment ? "Menghapus..." : "Hapus"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }
