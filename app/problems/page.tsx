@@ -1,22 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProblemCard from "@/components/ProblemCard";
-import { problemsData } from "@/lib/problems-data";
+import { getAllProblems, Problem } from "@/lib/problems";
 
 type DifficultyFilter = "all" | "easy" | "medium" | "hard";
 
-const allProblems = Object.values(problemsData).map((problem) => ({
-  id: problem.id,
-  title: problem.title,
-  description: problem.description,
-  timeLimit: problem.timeLimit,
-  memoryLimit: problem.memoryLimit,
-  difficulty: problem.difficulty,
-}));
-
 export default function ProblemsPage() {
   const [filter, setFilter] = useState<DifficultyFilter>("all");
+  const [allProblems, setAllProblems] = useState<Problem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProblems = async () => {
+      const problems = await getAllProblems();
+      setAllProblems(problems);
+      setLoading(false);
+    };
+    fetchProblems();
+  }, []);
 
   const filteredProblems =
     filter === "all"
@@ -82,9 +84,19 @@ export default function ProblemsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredProblems.map((problem) => (
-          <ProblemCard key={problem.id} {...problem} />
-        ))}
+        {loading ? (
+          <div className="col-span-full text-center py-12">
+            <p className="text-zinc-600">Memuat soal...</p>
+          </div>
+        ) : filteredProblems.length > 0 ? (
+          filteredProblems.map((problem) => (
+            <ProblemCard key={problem.id} {...problem} />
+          ))
+        ) : (
+          <div className="col-span-full text-center py-12">
+            <p className="text-zinc-600">Tidak ada soal ditemukan</p>
+          </div>
+        )}
       </div>
     </section>
   );

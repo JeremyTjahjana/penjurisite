@@ -1,9 +1,9 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { problemsData } from "@/lib/problems-data";
+import { getProblemById, Problem } from "@/lib/problems";
 
 export default function ProblemDetailPage({
   params,
@@ -12,9 +12,29 @@ export default function ProblemDetailPage({
 }) {
   const [showSolution, setShowSolution] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [problem, setProblem] = useState<Problem | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const { id } = use(params);
-  const problem = problemsData[id];
+
+  useEffect(() => {
+    const fetchProblem = async () => {
+      const data = await getProblemById(id);
+      setProblem(data);
+      setLoading(false);
+    };
+    fetchProblem();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <section className="flex flex-1 flex-col bg-zinc-100 px-10 py-12">
+        <div className="text-center py-12">
+          <p className="text-zinc-600">Memuat soal...</p>
+        </div>
+      </section>
+    );
+  }
 
   if (!problem) {
     notFound();
@@ -139,7 +159,69 @@ export default function ProblemDetailPage({
                 <h3 className="text-base font-semibold uppercase tracking-wide text-zinc-900">
                   Video Tutorial
                 </h3>
-                <p className="mt-2 text-sm text-zinc-600">Not available yet</p>
+                {problem.youtubeLink ? (
+                  <div className="mt-4">
+                    {(() => {
+                      const url = problem.youtubeLink;
+                      let videoId = "";
+
+                      // Extract video ID from various YouTube URL formats
+                      if (url.includes("watch?v=")) {
+                        videoId = url.split("watch?v=")[1]?.split("&")[0] || "";
+                      } else if (url.includes("youtu.be/")) {
+                        videoId =
+                          url.split("youtu.be/")[1]?.split("?")[0] || "";
+                      } else if (url.includes("embed/")) {
+                        videoId = url.split("embed/")[1]?.split("?")[0] || "";
+                      }
+
+                      if (!videoId) {
+                        return (
+                          <div className="text-sm text-zinc-600">
+                            <p>Link video tidak valid: {url}</p>
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-2 inline-block text-blue-600 hover:underline"
+                            >
+                              Buka di YouTube →
+                            </a>
+                          </div>
+                        );
+                      }
+
+                      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+
+                      return (
+                        <>
+                          <iframe
+                            width="100%"
+                            height="315"
+                            src={embedUrl}
+                            title="Video Tutorial"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="rounded-lg"
+                          ></iframe>
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-3 inline-block text-sm text-blue-600 hover:underline"
+                          >
+                            Buka di YouTube →
+                          </a>
+                        </>
+                      );
+                    })()}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm text-zinc-600">
+                    Video tutorial belum tersedia
+                  </p>
+                )}
               </div>
             </div>
           )}
