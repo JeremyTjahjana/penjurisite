@@ -29,8 +29,10 @@ export default function ProblemCard({
   memoryLimit,
   difficulty,
 }: ProblemCardProps) {
+  const problemHref = `/problems/${encodeURIComponent(id)}`;
+
   return (
-    <Link href={`/problems/${id}`}>
+    <Link href={problemHref}>
       <div className="group cursor-pointer rounded-lg bg-white p-6 shadow-sm transition-all hover:shadow-md">
         <div className="mb-3 flex items-center justify-between">
           <span

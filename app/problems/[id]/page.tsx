@@ -34,25 +34,26 @@ export default function ProblemDetailPage({
   const [deletingComment, setDeletingComment] = useState(false);
 
   const { id } = use(params);
+  const normalizedId = decodeURIComponent(id).trim();
 
   useEffect(() => {
     const fetchProblem = async () => {
-      const data = await getProblemById(id);
+      const data = await getProblemById(normalizedId);
       setProblem(data);
       setLoading(false);
     };
     fetchProblem();
-  }, [id]);
+  }, [normalizedId]);
 
   useEffect(() => {
     const fetchComments = async () => {
       setCommentsLoading(true);
-      const data = await getCommentsByProblem(id);
+      const data = await getCommentsByProblem(normalizedId);
       setComments(data);
       setCommentsLoading(false);
     };
     fetchComments();
-  }, [id]);
+  }, [normalizedId]);
 
   if (loading) {
     return (
@@ -89,7 +90,7 @@ export default function ProblemDetailPage({
 
     setSubmittingComment(true);
 
-    const newComment = await addCommentAction(id, commentContent);
+    const newComment = await addCommentAction(normalizedId, commentContent);
 
     if (newComment) {
       setComments([newComment, ...comments]);
@@ -124,7 +125,11 @@ export default function ProblemDetailPage({
 
     setSubmittingReply(true);
 
-    const newReply = await addReplyAction(id, parentCommentId, replyContent);
+    const newReply = await addReplyAction(
+      normalizedId,
+      parentCommentId,
+      replyContent,
+    );
 
     if (newReply) {
       // Update comments tree with new reply
@@ -201,7 +206,9 @@ export default function ProblemDetailPage({
             <h3 className="mb-3 mt-8 text-base font-semibold uppercase tracking-wide text-zinc-900">
               Keluaran
             </h3>
-            <p className="leading-relaxed">{problem.output}</p>
+            <p className="whitespace-pre-line leading-relaxed">
+              {problem.output}
+            </p>
           </div>
 
           {problem.examples.map((example, index) => (
@@ -209,14 +216,14 @@ export default function ProblemDetailPage({
               <h3 className="mb-3 mt-8 text-base font-semibold uppercase tracking-wide text-zinc-900">
                 Contoh Masukan {index + 1}
               </h3>
-              <div className="inline-block rounded bg-zinc-100 px-4 py-3 font-mono text-sm">
+              <div className="inline-block whitespace-pre-line rounded bg-zinc-100 px-4 py-3 font-mono text-sm">
                 {example.input}
               </div>
 
               <h3 className="mb-3 mt-6 text-base font-semibold uppercase tracking-wide text-zinc-900">
                 Contoh Keluaran {index + 1}
               </h3>
-              <div className="inline-block rounded bg-zinc-100 px-4 py-3 font-mono text-sm">
+              <div className="inline-block whitespace-pre-line rounded bg-zinc-100 px-4 py-3 font-mono text-sm">
                 {example.output}
               </div>
 
