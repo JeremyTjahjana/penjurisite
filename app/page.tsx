@@ -6,6 +6,7 @@ import Link from "next/link";
 export default function Home() {
   const [totalVisitors, setTotalVisitors] = useState<number>(0);
   const [todayVisitors, setTodayVisitors] = useState<number>(0);
+  const [weeklyVisitors, setWeeklyVisitors] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,6 +17,7 @@ export default function Home() {
         if (data.success) {
           setTotalVisitors(data.totalVisitors);
           setTodayVisitors(data.todayVisitors);
+          setWeeklyVisitors(data.weeklyVisitors);
         }
       } catch (error) {
         console.error("Error tracking visitor:", error);
@@ -39,9 +41,9 @@ export default function Home() {
               "Loading..."
             ) : (
               <>
-                Visitors:{" "}
+                Visitors this week:{" "}
                 <span className="font-mono font-semibold">
-                  {totalVisitors.toLocaleString()}
+                  {weeklyVisitors.toLocaleString()}
                 </span>
               </>
             )}
@@ -156,6 +158,20 @@ export default function Home() {
         >
           Lihat soal-soal →
         </Link>
+      </div>
+
+      {/* Lifetime visitors counter - bottom right */}
+      <div className="mt-12 flex justify-end">
+        <div className="text-xs text-zinc-500">
+          {!loading && (
+            <>
+              Total page views:{" "}
+              <span className="font-mono">
+                {totalVisitors.toLocaleString()}
+              </span>
+            </>
+          )}
+        </div>
       </div>
     </section>
   );

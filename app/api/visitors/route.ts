@@ -34,9 +34,22 @@ export async function GET(request: NextRequest) {
 
     if (todayError) throw todayError;
 
+    // Count page views for this week (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const weekStartDate = sevenDaysAgo.toISOString().split("T")[0];
+
+    const { count: weekCount, error: weekError } = await supabase
+      .from("site_stats")
+      .select("*", { count: "exact", head: true })
+      .gte("visited_at", `${weekStartDate}T00:00:00`);
+
+    if (weekError) throw weekError;
+
     return NextResponse.json({
       totalVisitors: totalCount || 0,
       todayVisitors: todayCount || 0,
+      weeklyVisitors: weekCount || 0,
       success: true,
     });
   } catch (error) {
