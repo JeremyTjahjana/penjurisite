@@ -34,13 +34,13 @@ export default function Home() {
           <p className="text-sm font-medium uppercase tracking-[0.3em] text-zinc-400">
             Welcome
           </p>
-          <div className="rounded-full bg-blue-100 px-4 py-1 text-xs font-semibold text-blue-700">
+          <div className="text-xs text-zinc-400">
             {loading ? (
               "Loading..."
             ) : (
               <>
-                👥 Visitors:{" "}
-                <span className="font-mono font-bold">
+                Page views:{" "}
+                <span className="font-mono font-semibold">
                   {totalVisitors.toLocaleString()}
                 </span>
               </>

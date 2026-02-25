@@ -1,61 +1,42 @@
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 
 export async function GET(request: NextRequest) {
   try {
-    // Get client IP from headers
-    const forwardedFor = request.headers.get("x-forwarded-for");
-    const ip = forwardedFor?.split(",")[0] || "unknown";
-
-    // Create a hash of IP + user agent for unique visitor identification
-    const userAgent = request.headers.get("user-agent") || "";
-    const visitorHash = crypto
-      .createHash("sha256")
-      .update(ip + userAgent)
-      .digest("hex")
-      .substring(0, 16);
-
-    // Check if visitor already exists today
     const today = new Date().toISOString().split("T")[0];
 
-    const { data: existingVisitor, error: checkError } = await supabase
-      .from("site_stats")
-      .select("id")
-      .eq("visitor_hash", visitorHash)
-      .gte("visited_at", `${today}T00:00:00`)
-      .single();
+    // Insert a new page view record every time (no unique check)
+    const { error: insertError } = await supabase.from("site_stats").insert([
+      {
+        visitor_ip:
+          request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown",
+        page_path: "/",
+        created_date: today,
+      },
+    ]);
 
-    // If visitor doesn't exist today, insert new record
-    if (!existingVisitor && !checkError) {
-      await supabase.from("site_stats").insert([
-        {
-          visitor_hash: visitorHash,
-          visitor_ip: ip,
-          page_path: "/",
-          created_date: today,
-        },
-      ]);
+    if (insertError) {
+      console.error("Insert error:", insertError);
     }
 
-    // Get total unique visitors count for all time
-    const { data: allVisitors, error: countError } = await supabase
+    // Count total page views (all time)
+    const { count: totalCount, error: totalError } = await supabase
       .from("site_stats")
-      .select("visitor_hash", { count: "exact" });
+      .select("*", { count: "exact", head: true });
 
-    if (countError) throw countError;
+    if (totalError) throw totalError;
 
-    // Get unique visitors count for today
-    const { data: todayVisitors, error: todayError } = await supabase
+    // Count page views for today
+    const { count: todayCount, error: todayError } = await supabase
       .from("site_stats")
-      .select("visitor_hash", { count: "exact" })
+      .select("*", { count: "exact", head: true })
       .gte("visited_at", `${today}T00:00:00`);
 
     if (todayError) throw todayError;
 
     return NextResponse.json({
-      totalVisitors: allVisitors?.length || 0,
-      todayVisitors: todayVisitors?.length || 0,
+      totalVisitors: totalCount || 0,
+      todayVisitors: todayCount || 0,
       success: true,
     });
   } catch (error) {
