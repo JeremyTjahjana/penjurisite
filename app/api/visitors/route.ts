@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     // Get client IP from headers
     const forwardedFor = request.headers.get("x-forwarded-for");
-    const ip = forwardedFor?.split(",")[0] || request.ip || "unknown";
+    const ip = forwardedFor?.split(",")[0] || "unknown";
 
     // Create a hash of IP + user agent for unique visitor identification
     const userAgent = request.headers.get("user-agent") || "";
