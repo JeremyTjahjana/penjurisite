@@ -39,7 +39,7 @@ export default function Home() {
               "Loading..."
             ) : (
               <>
-                Page views:{" "}
+                Visitors:{" "}
                 <span className="font-mono font-semibold">
                   {totalVisitors.toLocaleString()}
                 </span>
