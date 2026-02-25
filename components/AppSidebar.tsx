@@ -13,6 +13,7 @@ import {
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Problems", href: "/problems" },
+  { label: "Kalkulator + Prediksi IPK (To be added)", href: "/kalkulator-ipk" },
 ];
 
 export default function AppSidebar() {
