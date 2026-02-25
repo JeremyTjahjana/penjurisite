@@ -4,29 +4,27 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
-  const [visitorCount, setVisitorCount] = useState<number>(0);
+  const [totalVisitors, setTotalVisitors] = useState<number>(0);
+  const [todayVisitors, setTodayVisitors] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get current count from localStorage
-    const storedCount = localStorage.getItem("visitorCount");
-    const currentCount = storedCount ? parseInt(storedCount) : 0;
+    const trackVisitor = async () => {
+      try {
+        const response = await fetch("/api/visitors");
+        const data = await response.json();
+        if (data.success) {
+          setTotalVisitors(data.totalVisitors);
+          setTodayVisitors(data.todayVisitors);
+        }
+      } catch (error) {
+        console.error("Error tracking visitor:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Check if this is a new session
-    const hasVisited = sessionStorage.getItem("hasVisited");
-
-    if (!hasVisited) {
-      // New session - increment counter
-      const newCount = currentCount + 1;
-      localStorage.setItem("visitorCount", newCount.toString());
-      sessionStorage.setItem("hasVisited", "true");
-      setVisitorCount(newCount);
-    } else {
-      // Returning in same session - just display current count
-      setVisitorCount(currentCount);
-    }
-
-    setLoading(false);
+    trackVisitor();
   }, []);
 
   return (
@@ -36,15 +34,18 @@ export default function Home() {
           <p className="text-sm font-medium uppercase tracking-[0.3em] text-zinc-400">
             Welcome
           </p>
-          {/* <div className="rounded-full bg-blue-100 px-4 py-1 text-xs font-semibold text-blue-700">
+          <div className="rounded-full bg-blue-100 px-4 py-1 text-xs font-semibold text-blue-700">
             {loading ? (
               "Loading..."
             ) : (
               <>
-                Visitors: <span className="font-mono">{visitorCount}</span>
+                👥 Visitors:{" "}
+                <span className="font-mono font-bold">
+                  {totalVisitors.toLocaleString()}
+                </span>
               </>
             )}
-          </div> */}
+          </div>
         </div>
         <h1 className="mt-3 text-3xl font-semibold text-zinc-900">
           C/C++ Stuff
