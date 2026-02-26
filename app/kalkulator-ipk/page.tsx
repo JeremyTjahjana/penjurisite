@@ -445,10 +445,10 @@ export default function KalkulatorIPKPage() {
       <div className="min-h-screen bg-zinc-50 px-4 py-12">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center">
-            <h1 className="text-4xl font-semibold text-zinc-900">
+            <h1 className="mt-2 text-3xl font-bold text-zinc-900">
               IPK and Grade Calculator
             </h1>
-            <p className="mt-2 text-base text-zinc-600">
+            <p className="mt-2 text-sm text-zinc-600">
               Kelola komponen nilai, kriteria, dan prediksi capaian IP.
             </p>
           </div>
