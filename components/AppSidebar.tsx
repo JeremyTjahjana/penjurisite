@@ -55,8 +55,11 @@ export default function AppSidebar() {
               appearance={{
                 elements: {
                   avatarBox: "w-10 h-10",
+                  userButtonPopoverCard: "z-[9999]",
+                  userButtonPopoverActionButton: "hover:bg-zinc-100",
                 },
               }}
+              afterSignOutUrl="/"
             />
             <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
               <p className="font-medium text-zinc-900 truncate">
