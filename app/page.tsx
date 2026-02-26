@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <>
-      <section className="flex flex-1 flex-col bg-zinc-100 px-6 py-8 md:px-10 md:py-12">
+      <section className="flex flex-1 flex-col bg-zinc-100 px-4 py-6 md:px-10 md:py-12">
         <div className="mx-auto w-full max-w-7xl">
           <div className="mb-8">
             <div className="mb-3 flex items-center gap-4">
@@ -51,19 +51,16 @@ export default function Home() {
                 )}
               </div>
             </div>
-            <h1 className="mt-2 text-3xl font-bold text-zinc-900">
+            <h1 className="mt-2 text-2xl font-bold text-zinc-900 md:text-3xl">
               C/C++ Stuff
             </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-600">
+            <p className="mt-2 max-w-3xl text-xs leading-relaxed text-zinc-600 md:text-sm">
               Disini ku bakalan upload soal-soal kemarin buat latihan beserta
               solusi yang sudah di acc ya ges, semoga bisa membantu kalian buat
               latihan dan belajar lebih baik lagi. Jangan lupa buat latihan
               terus ya, biar makin jago! Semangatttt!
             </p>
-            <p
-              className="text-blue-600 mt-2 text-xs
-            opacity-50 transition hover:opacity-100"
-            >
+            <p className="mt-2 text-[11px] text-blue-600 opacity-50 transition hover:opacity-100 md:text-xs">
               Ada fitur baru di "Your IPK" buat bantu kalian ngitung IPK dan
               prediksi dapet A/AB berdasarkan nilai yang udah kalian dapetin!
             </p>
@@ -71,10 +68,10 @@ export default function Home() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
-              <h2 className="mb-3 text-base font-semibold text-zinc-900">
+              <h2 className="mb-3 text-sm font-semibold text-zinc-900 md:text-base">
                 Practice Sites Recommendation
               </h2>
-              <ul className="space-y-2.5 text-sm text-zinc-600">
+              <ul className="space-y-2.5 text-xs text-zinc-600 md:text-sm">
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 text-zinc-400">•</span>
                   <span>
@@ -130,10 +127,10 @@ export default function Home() {
             </div>
 
             <div className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
-              <h2 className="mb-3 text-base font-semibold text-zinc-900">
+              <h2 className="mb-3 text-sm font-semibold text-zinc-900 md:text-base">
                 YouTube Recommendations
               </h2>
-              <ul className="space-y-2.5 text-sm text-zinc-600">
+              <ul className="space-y-2.5 text-xs text-zinc-600 md:text-sm">
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 text-zinc-400">•</span>
                   <span>
@@ -182,7 +179,7 @@ export default function Home() {
 
           <Link
             href="/problems"
-            className="mt-6 inline-flex w-fit items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 hover:scale-105"
+            className="mt-6 inline-flex w-fit items-center gap-2 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-zinc-800 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 hover:scale-105 md:px-5 md:py-2.5 md:text-sm"
           >
             <span>Lihat soal-soal</span>
             <span>→</span>

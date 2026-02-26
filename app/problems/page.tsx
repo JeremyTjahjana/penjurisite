@@ -26,16 +26,16 @@ export default function ProblemsPage() {
       : allProblems.filter((p) => p.difficulty === filter);
 
   return (
-    <section className="flex flex-1 flex-col bg-zinc-100 px-6 py-8 md:px-10 md:py-12">
+    <section className="flex flex-1 flex-col bg-zinc-100 px-4 py-6 md:px-10 md:py-12">
       <div className="mx-auto w-full max-w-7xl">
         <div className="mb-8">
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
             Practice
           </p>
-          <h1 className="mt-2 text-3xl font-bold text-zinc-900">
+          <h1 className="mt-2 text-2xl font-bold text-zinc-900 md:text-3xl">
             C++ Problems
           </h1>
-          <p className="mt-2 text-sm text-zinc-600">
+          <p className="mt-2 text-xs text-zinc-600 md:text-sm">
             Latihan soal C++ untuk meningkatkan pemahaman konsep pemrograman
           </p>
         </div>
@@ -43,7 +43,7 @@ export default function ProblemsPage() {
         <div className="mb-6 flex flex-wrap gap-2">
           <button
             onClick={() => setFilter("all")}
-            className={`rounded-lg px-4 py-1.5 text-sm font-medium transition ${
+            className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
               filter === "all"
                 ? "bg-zinc-900 text-white"
                 : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
@@ -53,7 +53,7 @@ export default function ProblemsPage() {
           </button>
           <button
             onClick={() => setFilter("easy")}
-            className={`rounded-lg px-4 py-1.5 text-sm font-medium transition ${
+            className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
               filter === "easy"
                 ? "bg-green-600 text-white"
                 : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
@@ -63,7 +63,7 @@ export default function ProblemsPage() {
           </button>
           <button
             onClick={() => setFilter("medium")}
-            className={`rounded-lg px-4 py-1.5 text-sm font-medium transition ${
+            className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
               filter === "medium"
                 ? "bg-yellow-600 text-white"
                 : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
@@ -74,7 +74,7 @@ export default function ProblemsPage() {
           </button>
           <button
             onClick={() => setFilter("hard")}
-            className={`rounded-lg px-4 py-1.5 text-sm font-medium transition ${
+            className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
               filter === "hard"
                 ? "bg-red-600 text-white"
                 : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
@@ -106,7 +106,7 @@ export default function ProblemsPage() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <p className="text-sm text-zinc-600">Memuat soal...</p>
+              <p className="text-xs text-zinc-600 md:text-sm">Memuat soal...</p>
             </div>
           ) : filteredProblems.length > 0 ? (
             filteredProblems.map((problem) => (
@@ -114,7 +114,9 @@ export default function ProblemsPage() {
             ))
           ) : (
             <div className="col-span-full rounded-lg border border-dashed border-zinc-300 bg-zinc-50 py-16 text-center">
-              <p className="text-sm text-zinc-600">Tidak ada soal ditemukan</p>
+              <p className="text-xs text-zinc-600 md:text-sm">
+                Tidak ada soal ditemukan
+              </p>
             </div>
           )}
         </div>

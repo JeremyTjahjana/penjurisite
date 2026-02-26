@@ -58,9 +58,9 @@ export default function ProblemDetailPage({
 
   if (loading) {
     return (
-      <section className="flex flex-1 flex-col bg-zinc-100 px-10 py-12">
+      <section className="flex flex-1 flex-col bg-zinc-100 px-4 py-6 md:px-10 md:py-12">
         <div className="text-center py-12">
-          <p className="text-zinc-600">Memuat soal...</p>
+          <p className="text-xs text-zinc-600 md:text-sm">Memuat soal...</p>
         </div>
       </section>
     );
@@ -155,27 +155,27 @@ export default function ProblemDetailPage({
   };
 
   return (
-    <section className="flex flex-1 flex-col bg-zinc-100 px-10 py-12">
+    <section className="flex flex-1 flex-col bg-zinc-100 px-4 py-6 md:px-10 md:py-12">
       <Link
         href="/problems"
-        className="mb-6 inline-flex w-fit items-center gap-2 text-sm font-medium text-blue-600 hover:underline"
+        className="mb-6 inline-flex w-fit items-center gap-2 text-xs font-medium text-blue-600 hover:underline md:text-sm"
       >
         ← Kembali ke daftar soal
       </Link>
 
-      <div className="mx-auto w-full max-w-4xl rounded-lg bg-white px-12 py-10 shadow-sm">
-        <h2 className="border-b-2 border-zinc-900 pb-3 text-center text-2xl font-semibold text-zinc-900">
+      <div className="mx-auto w-full max-w-4xl rounded-lg bg-white px-5 py-6 shadow-sm md:px-12 md:py-10">
+        <h2 className="border-b-2 border-zinc-900 pb-3 text-center text-xl font-semibold text-zinc-900 md:text-2xl">
           {problem.title}
         </h2>
 
-        <div className="mb-6 mt-6 border-l-4 border-zinc-500 bg-zinc-50 p-4 font-mono text-sm text-zinc-700">
+        <div className="mb-6 mt-6 border-l-4 border-zinc-500 bg-zinc-50 p-3 font-mono text-xs text-zinc-700 md:p-4 md:text-sm">
           <div>Time limit: {problem.timeLimit}</div>
           <div>Memory limit: {problem.memoryLimit}</div>
         </div>
 
-        <div className="space-y-6 text-zinc-800">
+        <div className="space-y-6 text-xs text-zinc-800 md:text-sm">
           <div>
-            <h3 className="mb-3 mt-8 text-base font-semibold uppercase tracking-wide text-zinc-900">
+            <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
               Deskripsi
             </h3>
             <div className="whitespace-pre-line leading-relaxed">
@@ -185,7 +185,7 @@ export default function ProblemDetailPage({
 
           {problem.constraints && (
             <div>
-              <h3 className="mb-3 mt-8 text-base font-semibold uppercase tracking-wide text-zinc-900">
+              <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
                 Batasan
               </h3>
               <p className="whitespace-pre-line leading-relaxed">
@@ -195,7 +195,7 @@ export default function ProblemDetailPage({
           )}
 
           <div>
-            <h3 className="mb-3 mt-8 text-base font-semibold uppercase tracking-wide text-zinc-900">
+            <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
               Masukan
             </h3>
             <p className="whitespace-pre-line leading-relaxed">
@@ -204,7 +204,7 @@ export default function ProblemDetailPage({
           </div>
 
           <div>
-            <h3 className="mb-3 mt-8 text-base font-semibold uppercase tracking-wide text-zinc-900">
+            <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
               Keluaran
             </h3>
             <p className="whitespace-pre-line leading-relaxed">
@@ -214,23 +214,23 @@ export default function ProblemDetailPage({
 
           {problem.examples.map((example, index) => (
             <div key={index}>
-              <h3 className="mb-3 mt-8 text-base font-semibold uppercase tracking-wide text-zinc-900">
+              <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
                 Contoh Masukan {index + 1}
               </h3>
-              <div className="inline-block whitespace-pre-line rounded bg-zinc-100 px-4 py-3 font-mono text-sm">
+              <div className="inline-block whitespace-pre-line rounded bg-zinc-100 px-3 py-2 font-mono text-xs md:px-4 md:py-3 md:text-sm">
                 {example.input}
               </div>
 
-              <h3 className="mb-3 mt-6 text-base font-semibold uppercase tracking-wide text-zinc-900">
+              <h3 className="mb-3 mt-6 text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
                 Contoh Keluaran {index + 1}
               </h3>
-              <div className="inline-block whitespace-pre-line rounded bg-zinc-100 px-4 py-3 font-mono text-sm">
+              <div className="inline-block whitespace-pre-line rounded bg-zinc-100 px-3 py-2 font-mono text-xs md:px-4 md:py-3 md:text-sm">
                 {example.output}
               </div>
 
               {example.explanation && (
                 <>
-                  <h3 className="mb-3 mt-6 text-base font-semibold uppercase tracking-wide text-zinc-900">
+                  <h3 className="mb-3 mt-6 text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
                     Penjelasan Contoh {index + 1}
                   </h3>
                   <p className="leading-relaxed">{example.explanation}</p>
@@ -243,7 +243,7 @@ export default function ProblemDetailPage({
         <div className="mt-10 border-t border-zinc-200 pt-8">
           <button
             onClick={() => setShowSolution(!showSolution)}
-            className="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 md:px-6 md:py-3 md:text-base"
           >
             {showSolution ? "Sembunyikan Solusi" : "Lihat Solusi"}
           </button>
@@ -251,22 +251,22 @@ export default function ProblemDetailPage({
           {showSolution && (
             <div className="mt-6">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-base font-semibold uppercase tracking-wide text-zinc-900">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
                   Solusi
                 </h3>
                 <button
                   onClick={handleCopy}
-                  className="rounded bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-300"
+                  className="rounded bg-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-300 md:px-4 md:py-2 md:text-sm"
                 >
                   {copied ? "✓ Tersalin!" : "Salin Kode"}
                 </button>
               </div>
-              <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-5 text-sm text-zinc-100">
+              <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-3 text-xs text-zinc-100 md:p-5 md:text-sm">
                 <code>{problem.solution}</code>
               </pre>
 
-              <div className="mt-6 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-4">
-                <h3 className="text-base font-semibold uppercase tracking-wide text-zinc-900">
+              <div className="mt-6 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-3 md:p-4">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
                   Video Tutorial
                 </h3>
                 {problem.youtubeLink ? (
@@ -287,7 +287,7 @@ export default function ProblemDetailPage({
 
                       if (!videoId) {
                         return (
-                          <div className="text-sm text-zinc-600">
+                          <div className="text-xs text-zinc-600 md:text-sm">
                             <p>Link video tidak valid: {url}</p>
                             <a
                               href={url}
@@ -319,7 +319,7 @@ export default function ProblemDetailPage({
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-3 inline-block text-sm text-blue-600 hover:underline"
+                            className="mt-3 inline-block text-xs text-blue-600 hover:underline md:text-sm"
                           >
                             Buka di YouTube →
                           </a>
@@ -328,7 +328,7 @@ export default function ProblemDetailPage({
                     })()}
                   </div>
                 ) : (
-                  <p className="mt-2 text-sm text-zinc-600">
+                  <p className="mt-2 text-xs text-zinc-600 md:text-sm">
                     Video tutorial belum tersedia
                   </p>
                 )}
@@ -340,8 +340,10 @@ export default function ProblemDetailPage({
         {/* Comments Section */}
         <div className="mt-12 border-t border-zinc-200 pt-8">
           <div className="mb-6 flex items-center gap-3">
-            <h2 className="text-xl font-bold text-zinc-900">Komentar</h2>
-            <span className="rounded-full bg-zinc-200 px-2.5 py-0.5 text-xs font-semibold text-zinc-700">
+            <h2 className="text-lg font-bold text-zinc-900 md:text-xl">
+              Komentar
+            </h2>
+            <span className="rounded-full bg-zinc-200 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-700 md:text-xs">
               {comments.length}
             </span>
           </div>
@@ -351,7 +353,7 @@ export default function ProblemDetailPage({
             <form onSubmit={handleSubmitComment} className="mb-6">
               <div className="flex gap-3">
                 <div className="flex-shrink-0">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-700 text-sm font-bold text-white">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-700 text-xs font-bold text-white md:h-8 md:w-8 md:text-sm">
                     {user.firstName?.charAt(0).toUpperCase() || "?"}
                   </div>
                 </div>
@@ -360,7 +362,7 @@ export default function ProblemDetailPage({
                     value={commentContent}
                     onChange={(e) => setCommentContent(e.target.value)}
                     placeholder="Tulis komentar..."
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 font-sans text-sm transition-all focus:border-zinc-500 focus:outline-none"
+                    className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 font-sans text-xs transition-all focus:border-zinc-500 focus:outline-none md:text-sm"
                     rows={2}
                     disabled={submittingComment}
                   />
@@ -368,7 +370,7 @@ export default function ProblemDetailPage({
                     <button
                       type="submit"
                       disabled={submittingComment || !commentContent.trim()}
-                      className="rounded-lg bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:bg-zinc-400 disabled:cursor-not-allowed"
+                      className="rounded-lg bg-zinc-900 px-3 py-1 text-xs font-medium text-white transition hover:bg-zinc-800 disabled:bg-zinc-400 disabled:cursor-not-allowed md:px-4 md:py-1.5 md:text-sm"
                     >
                       {submittingComment ? "Mengirim..." : "Kirim"}
                     </button>
@@ -378,7 +380,7 @@ export default function ProblemDetailPage({
             </form>
           ) : (
             <div className="mb-6 rounded-lg border border-zinc-300 bg-zinc-50 p-4">
-              <p className="text-sm text-zinc-700">
+              <p className="text-xs text-zinc-700 md:text-sm">
                 <Link
                   href="/sign-in"
                   className="font-semibold text-blue-600 hover:underline"
@@ -394,7 +396,7 @@ export default function ProblemDetailPage({
           {commentsLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
               <svg
-                className="mb-4 h-10 w-10 animate-spin text-blue-600"
+                className="mb-4 h-8 w-8 animate-spin text-blue-600 md:h-10 md:w-10"
                 viewBox="0 0 24 24"
               >
                 <circle
@@ -412,11 +414,13 @@ export default function ProblemDetailPage({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <p className="text-zinc-600">Memuat komentar...</p>
+              <p className="text-xs text-zinc-600 md:text-sm">
+                Memuat komentar...
+              </p>
             </div>
           ) : comments.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center">
-              <p className="text-sm text-zinc-600">
+            <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-6 text-center md:p-8">
+              <p className="text-xs text-zinc-600 md:text-sm">
                 Belum ada komentar. Jadilah yang pertama berkomentar!
               </p>
             </div>
@@ -432,7 +436,7 @@ export default function ProblemDetailPage({
                   <div className="flex gap-3 py-3">
                     {/* Avatar */}
                     <div className="flex-shrink-0">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-700 text-sm font-bold text-white">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-700 text-xs font-bold text-white md:h-8 md:w-8 md:text-sm">
                         {comment.userName.charAt(0).toUpperCase()}
                       </div>
                     </div>
@@ -440,10 +444,10 @@ export default function ProblemDetailPage({
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="mb-1 flex items-center gap-2">
-                        <p className="text-sm font-semibold text-zinc-900">
+                        <p className="text-xs font-semibold text-zinc-900 md:text-sm">
                           {comment.userName}
                         </p>
-                        <p className="text-xs text-zinc-500">
+                        <p className="text-[11px] text-zinc-500 md:text-xs">
                           {new Date(comment.createdAt).toLocaleDateString(
                             "id-ID",
                             {
@@ -456,14 +460,14 @@ export default function ProblemDetailPage({
                         {user?.id === comment.userId && (
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            className="ml-auto text-xs text-zinc-500 hover:text-red-600"
+                            className="ml-auto text-[11px] text-zinc-500 hover:text-red-600 md:text-xs"
                           >
                             Hapus
                           </button>
                         )}
                       </div>
 
-                      <p className="mb-2 whitespace-pre-wrap text-sm text-zinc-700">
+                      <p className="mb-2 whitespace-pre-wrap text-xs text-zinc-700 md:text-sm">
                         {comment.content}
                       </p>
 
@@ -476,7 +480,7 @@ export default function ProblemDetailPage({
                                 replyingTo === comment.id ? null : comment.id,
                               )
                             }
-                            className="text-xs font-medium text-zinc-600 hover:text-zinc-900"
+                            className="text-[11px] font-medium text-zinc-600 hover:text-zinc-900 md:text-xs"
                           >
                             {replyingTo === comment.id ? "Batal" : "Balas"}
                           </button>
@@ -489,11 +493,11 @@ export default function ProblemDetailPage({
                                 [comment.id]: !prev[comment.id],
                               }))
                             }
-                            className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-800"
+                            className="flex items-center gap-1 text-[11px] font-medium text-blue-600 hover:text-blue-800 md:text-xs"
                           >
                             {showReplies[comment.id] ? (
                               <svg
-                                className="h-4 w-4"
+                                className="h-3.5 w-3.5 md:h-4 md:w-4"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -507,7 +511,7 @@ export default function ProblemDetailPage({
                               </svg>
                             ) : (
                               <svg
-                                className="h-4 w-4"
+                                className="h-3.5 w-3.5 md:h-4 md:w-4"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -536,7 +540,7 @@ export default function ProblemDetailPage({
                         className="flex gap-3"
                       >
                         <div className="flex-shrink-0">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-700 text-xs font-bold text-white">
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-700 text-[11px] font-bold text-white md:h-7 md:w-7 md:text-xs">
                             {user.firstName?.charAt(0).toUpperCase() || "?"}
                           </div>
                         </div>
@@ -545,7 +549,7 @@ export default function ProblemDetailPage({
                             value={replyContent}
                             onChange={(e) => setReplyContent(e.target.value)}
                             placeholder="Tulis balasan..."
-                            className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 font-sans text-sm transition-all focus:border-zinc-500 focus:outline-none"
+                            className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 font-sans text-xs transition-all focus:border-zinc-500 focus:outline-none md:text-sm"
                             rows={2}
                             disabled={submittingReply}
                             autoFocus
@@ -554,7 +558,7 @@ export default function ProblemDetailPage({
                             <button
                               type="submit"
                               disabled={submittingReply || !replyContent.trim()}
-                              className="rounded-lg bg-zinc-900 px-3 py-1 text-xs font-medium text-white transition hover:bg-zinc-800 disabled:bg-zinc-400 disabled:cursor-not-allowed"
+                              className="rounded-lg bg-zinc-900 px-2.5 py-1 text-[11px] font-medium text-white transition hover:bg-zinc-800 disabled:bg-zinc-400 disabled:cursor-not-allowed md:px-3 md:text-xs"
                             >
                               {submittingReply ? "Mengirim..." : "Balas"}
                             </button>
@@ -564,7 +568,7 @@ export default function ProblemDetailPage({
                                 setReplyingTo(null);
                                 setReplyContent("");
                               }}
-                              className="rounded-lg px-3 py-1 text-xs font-medium text-zinc-600 transition hover:bg-zinc-100"
+                              className="rounded-lg px-2.5 py-1 text-[11px] font-medium text-zinc-600 transition hover:bg-zinc-100 md:px-3 md:text-xs"
                             >
                               Batal
                             </button>
@@ -589,7 +593,7 @@ export default function ProblemDetailPage({
                           >
                             {/* Reply Avatar */}
                             <div className="flex-shrink-0">
-                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-600 text-xs font-bold text-white">
+                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-600 text-[11px] font-bold text-white md:h-7 md:w-7 md:text-xs">
                                 {reply.userName.charAt(0).toUpperCase()}
                               </div>
                             </div>
@@ -597,10 +601,10 @@ export default function ProblemDetailPage({
                             {/* Reply Content */}
                             <div className="flex-1 min-w-0">
                               <div className="mb-1 flex items-center gap-2">
-                                <p className="text-sm font-semibold text-zinc-900">
+                                <p className="text-xs font-semibold text-zinc-900 md:text-sm">
                                   {reply.userName}
                                 </p>
-                                <p className="text-xs text-zinc-500">
+                                <p className="text-[11px] text-zinc-500 md:text-xs">
                                   {new Date(reply.createdAt).toLocaleDateString(
                                     "id-ID",
                                     {
@@ -615,13 +619,13 @@ export default function ProblemDetailPage({
                                     onClick={() =>
                                       handleDeleteComment(reply.id)
                                     }
-                                    className="ml-auto text-xs text-zinc-500 hover:text-red-600"
+                                    className="ml-auto text-[11px] text-zinc-500 hover:text-red-600 md:text-xs"
                                   >
                                     Hapus
                                   </button>
                                 )}
                               </div>
-                              <p className="whitespace-pre-wrap text-sm text-zinc-700">
+                              <p className="whitespace-pre-wrap text-xs text-zinc-700 md:text-sm">
                                 {reply.content}
                               </p>
                             </div>
@@ -646,17 +650,17 @@ export default function ProblemDetailPage({
           />
           {/* Confirmation Card */}
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="relative w-full max-w-sm rounded-lg bg-white p-6 shadow-xl">
-              <h3 className="mb-2 text-base font-bold text-zinc-900">
+            <div className="relative w-full max-w-sm rounded-lg bg-white p-5 shadow-xl md:p-6">
+              <h3 className="mb-2 text-sm font-bold text-zinc-900 md:text-base">
                 Hapus Komentar?
               </h3>
-              <p className="mb-4 text-sm text-zinc-600">
+              <p className="mb-4 text-xs text-zinc-600 md:text-sm">
                 Tindakan ini tidak dapat dibatalkan.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setConfirmingDelete(null)}
-                  className="flex-1 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                  className="flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-50 md:px-4 md:py-2 md:text-sm"
                 >
                   Batal
                 </button>
@@ -693,7 +697,7 @@ export default function ProblemDetailPage({
                     setDeletingComment(false);
                   }}
                   disabled={deletingComment}
-                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed"
+                  className="flex-1 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed md:px-4 md:py-2 md:text-sm"
                 >
                   {deletingComment ? "Menghapus..." : "Hapus"}
                 </button>
