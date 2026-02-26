@@ -32,6 +32,7 @@ export default function ProblemDetailPage({
   const [submittingReply, setSubmittingReply] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
   const [deletingComment, setDeletingComment] = useState(false);
+  const [showReplies, setShowReplies] = useState<Record<string, boolean>>({});
 
   const { id } = use(params);
   const normalizedId = decodeURIComponent(id).trim();
@@ -338,193 +339,296 @@ export default function ProblemDetailPage({
 
         {/* Comments Section */}
         <div className="mt-12 border-t border-zinc-200 pt-8">
-          <h2 className="mb-6 text-2xl font-semibold text-zinc-900">
-            Komentar ({comments.length})
-          </h2>
+          <div className="mb-6 flex items-center gap-3">
+            <h2 className="text-xl font-bold text-zinc-900">Komentar</h2>
+            <span className="rounded-full bg-zinc-200 px-2.5 py-0.5 text-xs font-semibold text-zinc-700">
+              {comments.length}
+            </span>
+          </div>
 
           {/* Comment Form - Only for Logged In Users */}
           {user ? (
-            <form onSubmit={handleSubmitComment} className="mb-8">
-              <div className="rounded-lg border-2 border-zinc-200 bg-white p-4">
-                <p className="mb-3 text-sm text-zinc-600">
-                  Berkomentar sebagai{" "}
-                  <span className="font-semibold">{user.firstName}</span>
-                </p>
-                <textarea
-                  value={commentContent}
-                  onChange={(e) => setCommentContent(e.target.value)}
-                  placeholder="Tulis komentar Anda di sini..."
-                  className="w-full rounded border border-zinc-300 p-3 font-sans text-sm focus:border-blue-500 focus:outline-none"
-                  rows={3}
-                  disabled={submittingComment}
-                />
-                <button
-                  type="submit"
-                  disabled={submittingComment || !commentContent.trim()}
-                  className="mt-3 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition hover:bg-blue-700 disabled:bg-zinc-400"
-                >
-                  {submittingComment ? "Mengirim..." : "Kirim Komentar"}
-                </button>
+            <form onSubmit={handleSubmitComment} className="mb-6">
+              <div className="flex gap-3">
+                <div className="flex-shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-700 text-sm font-bold text-white">
+                    {user.firstName?.charAt(0).toUpperCase() || "?"}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <textarea
+                    value={commentContent}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                    placeholder="Tulis komentar..."
+                    className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 font-sans text-sm transition-all focus:border-zinc-500 focus:outline-none"
+                    rows={2}
+                    disabled={submittingComment}
+                  />
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={submittingComment || !commentContent.trim()}
+                      className="rounded-lg bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:bg-zinc-400 disabled:cursor-not-allowed"
+                    >
+                      {submittingComment ? "Mengirim..." : "Kirim"}
+                    </button>
+                  </div>
+                </div>
               </div>
             </form>
           ) : (
-            <div className="mb-8 rounded-lg border-2 border-yellow-200 bg-yellow-50 p-4">
-              <p className="text-sm text-yellow-800">
+            <div className="mb-6 rounded-lg border border-zinc-300 bg-zinc-50 p-4">
+              <p className="text-sm text-zinc-700">
                 <Link
                   href="/sign-in"
                   className="font-semibold text-blue-600 hover:underline"
                 >
                   Masuk
                 </Link>{" "}
-                untuk menambahkan komentar
+                untuk berkomentar
               </p>
             </div>
           )}
 
           {/* Comments List */}
           {commentsLoading ? (
-            <div className="text-center py-8">
+            <div className="flex flex-col items-center justify-center py-12">
+              <svg
+                className="mb-4 h-10 w-10 animate-spin text-blue-600"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
               <p className="text-zinc-600">Memuat komentar...</p>
             </div>
           ) : comments.length === 0 ? (
-            <div className="rounded-lg bg-zinc-50 p-8 text-center">
-              <p className="text-zinc-600">
+            <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center">
+              <p className="text-sm text-zinc-600">
                 Belum ada komentar. Jadilah yang pertama berkomentar!
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {comments.map((comment) => (
-                <div key={comment.id} className="space-y-3">
+              {comments.map((comment, index) => (
+                <div
+                  key={comment.id}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
                   {/* Main Comment */}
-                  <div className="rounded-lg border border-zinc-200 bg-white p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <p className="font-semibold text-zinc-900">
+                  <div className="flex gap-3 py-3">
+                    {/* Avatar */}
+                    <div className="flex-shrink-0">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-700 text-sm font-bold text-white">
+                        {comment.userName.charAt(0).toUpperCase()}
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="mb-1 flex items-center gap-2">
+                        <p className="text-sm font-semibold text-zinc-900">
                           {comment.userName}
                         </p>
                         <p className="text-xs text-zinc-500">
                           {new Date(comment.createdAt).toLocaleDateString(
                             "id-ID",
                             {
-                              year: "numeric",
-                              month: "long",
                               day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
+                              month: "short",
+                              year: "numeric",
                             },
                           )}
                         </p>
+                        {user?.id === comment.userId && (
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="ml-auto text-xs text-zinc-500 hover:text-red-600"
+                          >
+                            Hapus
+                          </button>
+                        )}
                       </div>
-                      {user?.id === comment.userId && (
-                        <button
-                          onClick={() => handleDeleteComment(comment.id)}
-                          className="ml-2 text-xs text-red-600 hover:text-red-800 hover:underline"
-                        >
-                          Hapus
-                        </button>
-                      )}
+
+                      <p className="mb-2 whitespace-pre-wrap text-sm text-zinc-700">
+                        {comment.content}
+                      </p>
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-3">
+                        {user && (
+                          <button
+                            onClick={() =>
+                              setReplyingTo(
+                                replyingTo === comment.id ? null : comment.id,
+                              )
+                            }
+                            className="text-xs font-medium text-zinc-600 hover:text-zinc-900"
+                          >
+                            {replyingTo === comment.id ? "Batal" : "Balas"}
+                          </button>
+                        )}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <button
+                            onClick={() =>
+                              setShowReplies((prev) => ({
+                                ...prev,
+                                [comment.id]: !prev[comment.id],
+                              }))
+                            }
+                            className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-800"
+                          >
+                            {showReplies[comment.id] ? (
+                              <svg
+                                className="h-4 w-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 15l7-7 7 7"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                className="h-4 w-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            )}
+                            {showReplies[comment.id] ? "Sembunyikan" : "Lihat"}{" "}
+                            {comment.replies.length} balasan
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-700">
-                      {comment.content}
-                    </p>
-                    {user && (
-                      <button
-                        onClick={() =>
-                          setReplyingTo(
-                            replyingTo === comment.id ? null : comment.id,
-                          )
-                        }
-                        className="mt-3 text-xs text-blue-600 hover:text-blue-800 hover:underline"
-                      >
-                        {replyingTo === comment.id ? "Batal" : "Balas"}
-                      </button>
-                    )}
                   </div>
 
                   {/* Reply Form */}
                   {replyingTo === comment.id && user && (
-                    <form
-                      onSubmit={(e) => handleSubmitReply(e, comment.id)}
-                      className="ml-6 space-y-2"
-                    >
-                      <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-                        <p className="mb-2 text-xs text-zinc-600">
-                          Membalas {comment.userName}
-                        </p>
-                        <textarea
-                          value={replyContent}
-                          onChange={(e) => setReplyContent(e.target.value)}
-                          placeholder="Tulis balasan Anda..."
-                          className="w-full rounded border border-zinc-300 p-2 font-sans text-sm focus:border-blue-500 focus:outline-none"
-                          rows={2}
-                          disabled={submittingReply}
-                        />
-                        <div className="mt-2 flex gap-2">
-                          <button
-                            type="submit"
-                            disabled={submittingReply || !replyContent.trim()}
-                            className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:bg-zinc-400"
-                          >
-                            {submittingReply ? "Mengirim..." : "Kirim"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setReplyingTo(null);
-                              setReplyContent("");
-                            }}
-                            className="rounded bg-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-400"
-                          >
-                            Batal
-                          </button>
+                    <div className="ml-11 mt-2 animate-slide-down">
+                      <form
+                        onSubmit={(e) => handleSubmitReply(e, comment.id)}
+                        className="flex gap-3"
+                      >
+                        <div className="flex-shrink-0">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-700 text-xs font-bold text-white">
+                            {user.firstName?.charAt(0).toUpperCase() || "?"}
+                          </div>
                         </div>
-                      </div>
-                    </form>
+                        <div className="flex-1">
+                          <textarea
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
+                            placeholder="Tulis balasan..."
+                            className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 font-sans text-sm transition-all focus:border-zinc-500 focus:outline-none"
+                            rows={2}
+                            disabled={submittingReply}
+                            autoFocus
+                          />
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              type="submit"
+                              disabled={submittingReply || !replyContent.trim()}
+                              className="rounded-lg bg-zinc-900 px-3 py-1 text-xs font-medium text-white transition hover:bg-zinc-800 disabled:bg-zinc-400 disabled:cursor-not-allowed"
+                            >
+                              {submittingReply ? "Mengirim..." : "Balas"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setReplyingTo(null);
+                                setReplyContent("");
+                              }}
+                              className="rounded-lg px-3 py-1 text-xs font-medium text-zinc-600 transition hover:bg-zinc-100"
+                            >
+                              Batal
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
                   )}
 
                   {/* Replies */}
-                  {comment.replies && comment.replies.length > 0 && (
-                    <div className="ml-6 space-y-3 border-l-2 border-zinc-200 pl-4">
-                      {comment.replies.map((reply) => (
-                        <div
-                          key={reply.id}
-                          className="rounded-lg border border-zinc-200 bg-zinc-50 p-3"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <p className="text-sm font-semibold text-zinc-900">
-                                {reply.userName}
-                              </p>
-                              <p className="text-xs text-zinc-500">
-                                {new Date(reply.createdAt).toLocaleDateString(
-                                  "id-ID",
-                                  {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  },
+                  {comment.replies &&
+                    comment.replies.length > 0 &&
+                    showReplies[comment.id] && (
+                      <div className="ml-11 mt-3 space-y-3">
+                        {comment.replies.map((reply, replyIndex) => (
+                          <div
+                            key={reply.id}
+                            className="animate-fade-in flex gap-3 py-2"
+                            style={{
+                              animationDelay: `${index * 50 + replyIndex * 30}ms`,
+                            }}
+                          >
+                            {/* Reply Avatar */}
+                            <div className="flex-shrink-0">
+                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-600 text-xs font-bold text-white">
+                                {reply.userName.charAt(0).toUpperCase()}
+                              </div>
+                            </div>
+
+                            {/* Reply Content */}
+                            <div className="flex-1 min-w-0">
+                              <div className="mb-1 flex items-center gap-2">
+                                <p className="text-sm font-semibold text-zinc-900">
+                                  {reply.userName}
+                                </p>
+                                <p className="text-xs text-zinc-500">
+                                  {new Date(reply.createdAt).toLocaleDateString(
+                                    "id-ID",
+                                    {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    },
+                                  )}
+                                </p>
+                                {user?.id === reply.userId && (
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteComment(reply.id)
+                                    }
+                                    className="ml-auto text-xs text-zinc-500 hover:text-red-600"
+                                  >
+                                    Hapus
+                                  </button>
                                 )}
+                              </div>
+                              <p className="whitespace-pre-wrap text-sm text-zinc-700">
+                                {reply.content}
                               </p>
                             </div>
-                            {user?.id === reply.userId && (
-                              <button
-                                onClick={() => handleDeleteComment(reply.id)}
-                                className="ml-2 text-xs text-red-600 hover:text-red-800 hover:underline"
-                              >
-                                Hapus
-                              </button>
-                            )}
                           </div>
-                          <p className="mt-2 whitespace-pre-wrap text-xs text-zinc-700">
-                            {reply.content}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
                 </div>
               ))}
             </div>
@@ -532,7 +636,7 @@ export default function ProblemDetailPage({
         </div>
       </div>
 
-      {/* Confirmation Card Modal */}
+      {/* Confirmation Modal */}
       {confirmingDelete && (
         <>
           {/* Backdrop */}
@@ -541,14 +645,13 @@ export default function ProblemDetailPage({
             onClick={() => setConfirmingDelete(null)}
           />
           {/* Confirmation Card */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="relative w-96 rounded-lg bg-white p-6 shadow-2xl">
-              <h3 className="mb-2 text-lg font-semibold text-zinc-900">
-                Hapus Komentar
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="relative w-full max-w-sm rounded-lg bg-white p-6 shadow-xl">
+              <h3 className="mb-2 text-base font-bold text-zinc-900">
+                Hapus Komentar?
               </h3>
-              <p className="mb-6 text-sm text-zinc-600">
-                Apakah Anda yakin ingin menghapus komentar ini? Tindakan ini
-                tidak dapat dibatalkan.
+              <p className="mb-4 text-sm text-zinc-600">
+                Tindakan ini tidak dapat dibatalkan.
               </p>
               <div className="flex gap-3">
                 <button
@@ -562,9 +665,26 @@ export default function ProblemDetailPage({
                     setDeletingComment(true);
                     const success = await deleteCommentAction(confirmingDelete);
                     if (success) {
-                      setComments(
-                        comments.filter((c) => c.id !== confirmingDelete),
-                      );
+                      // Update comments: remove from top level or from replies
+                      setComments((prevComments) => {
+                        // First try to remove as top-level comment
+                        const filteredComments = prevComments.filter(
+                          (c) => c.id !== confirmingDelete,
+                        );
+
+                        // If nothing was removed, it might be a reply
+                        if (filteredComments.length === prevComments.length) {
+                          // Remove from replies
+                          return prevComments.map((comment) => ({
+                            ...comment,
+                            replies: comment.replies?.filter(
+                              (r) => r.id !== confirmingDelete,
+                            ),
+                          }));
+                        }
+
+                        return filteredComments;
+                      });
                       toast.success("Komentar berhasil dihapus!");
                     } else {
                       toast.error("Gagal menghapus komentar");
@@ -573,7 +693,7 @@ export default function ProblemDetailPage({
                     setDeletingComment(false);
                   }}
                   disabled={deletingComment}
-                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:bg-red-400"
+                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed"
                 >
                   {deletingComment ? "Menghapus..." : "Hapus"}
                 </button>

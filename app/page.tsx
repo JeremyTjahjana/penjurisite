@@ -57,7 +57,9 @@ export default function Home() {
             Disini ku bakalan upload soal-soal kemarin buat latihan beserta
             solusi yang sudah di acc ya ges, semoga bisa membantu kalian buat
             latihan dan belajar lebih baik lagi. Jangan lupa buat latihan terus
-            ya, biar makin jago! Semangatttt!
+            ya, biar makin jago! Semangatttt! <br></br>(ada fitur baru di "Your
+            IPK" buat bantu kalian ngitung IPK dan prediksi dapet A/AB
+            berdasarkan nilai yang udah kalian dapetin yaa!)
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2">
