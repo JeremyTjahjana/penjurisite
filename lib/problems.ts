@@ -16,6 +16,7 @@ export interface Problem {
     output: string;
     explanation?: string;
   }>;
+  hints?: string[];
   solution: string;
   youtubeLink?: string;
 }
@@ -44,6 +45,7 @@ export async function getAllProblems(): Promise<Problem[]> {
     difficulty: item.difficulty,
     language: item.language || "cpp",
     examples: item.examples || [],
+    hints: item.hints || [],
     solution: item.solution,
     youtubeLink: item.youtube_link || undefined,
   }));
@@ -80,6 +82,7 @@ export async function getProblemsByLanguage(
       difficulty: item.difficulty,
       language: item.language || "cpp",
       examples: item.examples || [],
+      hints: item.hints || [],
       solution: item.solution,
       youtubeLink: item.youtube_link || undefined,
     }));
@@ -113,6 +116,7 @@ export async function getProblemById(id: string): Promise<Problem | null> {
     difficulty: data.difficulty,
     language: data.language || "cpp",
     examples: data.examples || [],
+    hints: data.hints || [],
     solution: data.solution,
     youtubeLink: data.youtube_link || undefined,
   };
@@ -135,6 +139,7 @@ export async function createProblem(
         difficulty: problem.difficulty,
         language: problem.language,
         examples: problem.examples,
+        hints: problem.hints,
         solution: problem.solution,
         youtube_link: problem.youtubeLink,
       },
@@ -159,6 +164,7 @@ export async function createProblem(
     difficulty: data.difficulty,
     language: data.language || "cpp",
     examples: data.examples || [],
+    hints: data.hints || [],
     solution: data.solution,
     youtubeLink: data.youtube_link || undefined,
   };
@@ -181,6 +187,7 @@ export async function updateProblem(
   if (problem.difficulty) updateData.difficulty = problem.difficulty;
   if (problem.language) updateData.language = problem.language;
   if (problem.examples) updateData.examples = problem.examples;
+  if (problem.hints) updateData.hints = problem.hints;
   if (problem.solution) updateData.solution = problem.solution;
   if (problem.youtubeLink !== undefined)
     updateData.youtube_link = problem.youtubeLink;
@@ -209,6 +216,7 @@ export async function updateProblem(
     difficulty: data.difficulty,
     language: data.language || "cpp",
     examples: data.examples || [],
+    hints: data.hints || [],
     solution: data.solution,
     youtubeLink: data.youtube_link || undefined,
   };

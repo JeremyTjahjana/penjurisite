@@ -7,6 +7,7 @@ import { useUser } from "@clerk/nextjs";
 import { getProblemById, getProblemsByLanguage, Problem } from "@/lib/problems";
 import { getCommentsByProblem, Comment } from "@/lib/comments";
 import { toast } from "react-hot-toast";
+import { SolutionConfirmationModal } from "@/components/SolutionConfirmationModal";
 import {
   addCommentAction,
   addReplyAction,
@@ -21,6 +22,9 @@ export default function ProblemDetailPage({
   const router = useRouter();
   const { user } = useUser();
   const [showSolution, setShowSolution] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showHintsSection, setShowHintsSection] = useState(false);
+  const [showHints, setShowHints] = useState<Set<number>>(new Set());
   const [copied, setCopied] = useState(false);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -286,12 +290,101 @@ export default function ProblemDetailPage({
         </div>
 
         <div className="mt-10 border-t border-zinc-200 pt-8">
-          <button
-            onClick={() => setShowSolution(!showSolution)}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 md:px-6 md:py-3 md:text-base"
-          >
-            {showSolution ? "Sembunyikan Solusi" : "Lihat Solusi"}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => {
+                if (!showSolution) {
+                  setShowConfirmationModal(true);
+                } else {
+                  setShowSolution(false);
+                }
+              }}
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
+                showSolution
+                  ? "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
+                  : "bg-zinc-900 text-white"
+              }`}
+            >
+              {showSolution ? "Sembunyikan Solusi" : "Lihat Solusi"}
+            </button>
+
+            <button
+              onClick={() => setShowHintsSection(!showHintsSection)}
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
+                showHintsSection
+                  ? "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
+                  : "bg-yellow-600 text-white"
+              }`}
+            >
+              Hints (
+              {
+                (problem.hints || []).filter(
+                  (h) => typeof h === "string" && h.trim() !== "",
+                ).length
+              }
+              )
+            </button>
+          </div>
+
+          {showConfirmationModal && (
+            <SolutionConfirmationModal
+              hints={problem.hints}
+              onCancel={() => setShowConfirmationModal(false)}
+              onConfirm={() => {
+                setShowConfirmationModal(false);
+                setShowSolution(true);
+              }}
+              problemTitle={problem.title}
+            />
+          )}
+
+          {showHintsSection && !showSolution && (
+            <div className="mt-6 space-y-2">
+              <p className="text-xs font-medium text-zinc-700 md:text-sm">
+                Hints yang tersedia:
+              </p>
+              {(problem.hints || []).some(
+                (h) => typeof h === "string" && h.trim() !== "",
+              ) ? (
+                <div className="space-y-2">
+                  {(problem.hints || []).map(
+                    (hint, index) =>
+                      typeof hint === "string" &&
+                      hint.trim() !== "" && (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            const newSet = new Set(showHints);
+                            if (newSet.has(index)) {
+                              newSet.delete(index);
+                            } else {
+                              newSet.add(index);
+                            }
+                            setShowHints(newSet);
+                          }}
+                          className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-2 text-left text-xs text-zinc-900 transition hover:bg-zinc-100 md:text-sm"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">
+                              Hint {index + 1}
+                            </span>
+                          </div>
+                          {showHints.has(index) && (
+                            <div className="mt-2 border-t border-zinc-200 pt-2 text-zinc-700">
+                              {hint}
+                            </div>
+                          )}
+                        </button>
+                      ),
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-zinc-500 md:text-sm">
+                  Tidak ada hints untuk soal ini
+                </p>
+              )}
+            </div>
+          )}
 
           {showSolution && (
             <div className="mt-6">
@@ -466,7 +559,7 @@ export default function ProblemDetailPage({
           ) : comments.length === 0 ? (
             <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-6 text-center md:p-8">
               <p className="text-xs text-zinc-600 md:text-sm">
-                Belum ada komentar. Jadilah yang pertama berkomentar!
+                Belum ada diskusi.
               </p>
             </div>
           ) : (
