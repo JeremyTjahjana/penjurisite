@@ -388,22 +388,7 @@ export default function ProblemDetailPage({
 
           {showSolution && (
             <div className="mt-6">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
-                  Solusi
-                </h3>
-                <button
-                  onClick={handleCopy}
-                  className="rounded bg-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-300 md:px-4 md:py-2 md:text-sm"
-                >
-                  {copied ? "✓ Tersalin!" : "Salin Kode"}
-                </button>
-              </div>
-              <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-3 text-xs text-zinc-100 md:p-5 md:text-sm">
-                <code>{problem.solution}</code>
-              </pre>
-
-              <div className="mt-6 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-3 md:p-4">
+              <div className="mb-6 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-3 md:p-4">
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
                   Video Tutorial
                 </h3>
@@ -471,6 +456,21 @@ export default function ProblemDetailPage({
                   </p>
                 )}
               </div>
+
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
+                  Solusi
+                </h3>
+                <button
+                  onClick={handleCopy}
+                  className="rounded bg-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-300 md:px-4 md:py-2 md:text-sm"
+                >
+                  {copied ? "✓ Tersalin!" : "Salin Kode"}
+                </button>
+              </div>
+              <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-3 text-xs text-zinc-100 md:p-5 md:text-sm">
+                <code>{problem.solution}</code>
+              </pre>
             </div>
           )}
         </div>
