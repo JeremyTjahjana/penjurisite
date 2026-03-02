@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
-import { LayoutWrapper } from "@/app/layout-wrapper";
-import { ToasterProvider } from "@/app/toaster-provider";
+import { LayoutWrapper } from "@/components/LayoutWrapper";
+import { ToasterProvider } from "@/components/ToasterProvider";
 import "./globals.css";
 
 const geistSans = Geist({

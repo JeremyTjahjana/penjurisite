@@ -10,6 +10,7 @@ export interface Problem {
   input: string;
   output: string;
   difficulty: "easy" | "medium" | "hard";
+  language: "c" | "cpp";
   examples: Array<{
     input: string;
     output: string;
@@ -41,6 +42,38 @@ export async function getAllProblems(): Promise<Problem[]> {
     input: item.input_desc,
     output: item.output_desc,
     difficulty: item.difficulty,
+    language: item.language || "cpp",
+    examples: item.examples || [],
+    solution: item.solution,
+    youtubeLink: item.youtube_link || undefined,
+  }));
+}
+
+export async function getProblemsByLanguage(
+  language: "c" | "cpp",
+): Promise<Problem[]> {
+  const { data, error } = await supabase
+    .from("problems")
+    .select("*")
+    .eq("language", language)
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching problems:", error);
+    return [];
+  }
+
+  return (data || []).map((item: any) => ({
+    id: item.id,
+    title: item.title,
+    timeLimit: item.time_limit,
+    memoryLimit: item.memory_limit,
+    description: item.description,
+    constraints: item.constraints || undefined,
+    input: item.input_desc,
+    output: item.output_desc,
+    difficulty: item.difficulty,
+    language: item.language || "cpp",
     examples: item.examples || [],
     solution: item.solution,
     youtubeLink: item.youtube_link || undefined,
@@ -73,6 +106,7 @@ export async function getProblemById(id: string): Promise<Problem | null> {
     input: data.input_desc,
     output: data.output_desc,
     difficulty: data.difficulty,
+    language: data.language || "cpp",
     examples: data.examples || [],
     solution: data.solution,
     youtubeLink: data.youtube_link || undefined,
@@ -94,6 +128,7 @@ export async function createProblem(
         input_desc: problem.input,
         output_desc: problem.output,
         difficulty: problem.difficulty,
+        language: problem.language,
         examples: problem.examples,
         solution: problem.solution,
         youtube_link: problem.youtubeLink,
@@ -117,6 +152,7 @@ export async function createProblem(
     input: data.input_desc,
     output: data.output_desc,
     difficulty: data.difficulty,
+    language: data.language || "cpp",
     examples: data.examples || [],
     solution: data.solution,
     youtubeLink: data.youtube_link || undefined,
@@ -138,6 +174,7 @@ export async function updateProblem(
   if (problem.input) updateData.input_desc = problem.input;
   if (problem.output) updateData.output_desc = problem.output;
   if (problem.difficulty) updateData.difficulty = problem.difficulty;
+  if (problem.language) updateData.language = problem.language;
   if (problem.examples) updateData.examples = problem.examples;
   if (problem.solution) updateData.solution = problem.solution;
   if (problem.youtubeLink !== undefined)
@@ -165,6 +202,7 @@ export async function updateProblem(
     input: data.input_desc,
     output: data.output_desc,
     difficulty: data.difficulty,
+    language: data.language || "cpp",
     examples: data.examples || [],
     solution: data.solution,
     youtubeLink: data.youtube_link || undefined,

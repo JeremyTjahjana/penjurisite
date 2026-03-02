@@ -1,10 +1,10 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
-import { getProblemById, Problem } from "@/lib/problems";
+import { getProblemById, getProblemsByLanguage, Problem } from "@/lib/problems";
 import { getCommentsByProblem, Comment } from "@/lib/comments";
 import { toast } from "react-hot-toast";
 import {
@@ -18,11 +18,13 @@ export default function ProblemDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const router = useRouter();
   const { user } = useUser();
   const [showSolution, setShowSolution] = useState(false);
   const [copied, setCopied] = useState(false);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [nextProblemId, setNextProblemId] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentContent, setCommentContent] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
@@ -41,6 +43,22 @@ export default function ProblemDetailPage({
     const fetchProblem = async () => {
       const data = await getProblemById(normalizedId);
       setProblem(data);
+
+      if (data) {
+        // Fetch all problems with the same language and difficulty to find next
+        const allProblems = await getProblemsByLanguage(data.language);
+        const sameCategory = allProblems.filter(
+          (p) => p.difficulty === data.difficulty,
+        );
+        const currentIndex = sameCategory.findIndex((p) => p.id === data.id);
+
+        if (currentIndex !== -1 && currentIndex < sameCategory.length - 1) {
+          setNextProblemId(sameCategory[currentIndex + 1].id);
+        } else {
+          setNextProblemId(null);
+        }
+      }
+
       setLoading(false);
     };
     fetchProblem();
@@ -154,14 +172,41 @@ export default function ProblemDetailPage({
     setSubmittingReply(false);
   };
 
+  const handleNextProblem = () => {
+    if (nextProblemId) {
+      router.push(`/problems/${nextProblemId}`);
+    } else if (problem) {
+      const difficultyLabels: Record<string, string> = {
+        easy: "easy",
+        medium: "medium",
+        hard: "hard",
+      };
+      const label = difficultyLabels[problem.difficulty] || problem.difficulty;
+      toast.success(`All ${label} problems completed!`);
+    }
+  };
+
   return (
     <section className="flex flex-1 flex-col bg-zinc-100 px-4 py-6 md:px-10 md:py-12">
-      <Link
-        href="/problems"
-        className="mb-6 inline-flex w-fit items-center gap-2 text-xs font-medium text-blue-600 hover:underline md:text-sm"
-      >
-        ← Kembali ke daftar soal
-      </Link>
+      <div className="mb-6 flex items-center justify-between gap-2">
+        <Link
+          href="/problems"
+          className="inline-flex items-center gap-2 text-xs font-medium text-blue-600 hover:underline md:text-sm"
+        >
+          ← Kembali ke daftar soal
+        </Link>
+        <button
+          onClick={handleNextProblem}
+          disabled={loading}
+          className={`inline-flex items-center gap-2 text-xs font-medium transition md:text-sm ${
+            nextProblemId
+              ? "text-blue-600 hover:underline"
+              : "text-zinc-400 cursor-not-allowed"
+          }`}
+        >
+          Soal Berikutnya →
+        </button>
+      </div>
 
       <div className="mx-auto w-full max-w-4xl rounded-lg bg-white px-5 py-6 shadow-sm md:px-12 md:py-10">
         <h2 className="border-b-2 border-zinc-900 pb-3 text-center text-xl font-semibold text-zinc-900 md:text-2xl">

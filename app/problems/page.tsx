@@ -2,23 +2,26 @@
 
 import { useState, useEffect } from "react";
 import ProblemCard from "@/components/ProblemCard";
-import { getAllProblems, Problem } from "@/lib/problems";
+import { LanguageDropdown } from "@/components/LanguageDropdown";
+import { getProblemsByLanguage, Problem } from "@/lib/problems";
 
 type DifficultyFilter = "all" | "easy" | "medium" | "hard";
+type LanguageFilter = "c" | "cpp";
 
 export default function ProblemsPage() {
   const [filter, setFilter] = useState<DifficultyFilter>("all");
+  const [language, setLanguage] = useState<LanguageFilter>("cpp");
   const [allProblems, setAllProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProblems = async () => {
-      const problems = await getAllProblems();
+      const problems = await getProblemsByLanguage(language);
       setAllProblems(problems);
       setLoading(false);
     };
     fetchProblems();
-  }, []);
+  }, [language]);
 
   const filteredProblems =
     filter === "all"
@@ -33,55 +36,68 @@ export default function ProblemsPage() {
             Practice
           </p>
           <h1 className="mt-2 text-2xl font-bold text-zinc-900 md:text-3xl">
-            C++ Problems
+            {language === "c" ? "C" : "C++"} Problems
           </h1>
           <p className="mt-2 text-xs text-zinc-600 md:text-sm">
-            Latihan soal C++ untuk meningkatkan pemahaman konsep pemrograman
+            Latihan soal {language === "c" ? "C" : "C++"} untuk meningkatkan
+            pemahaman konsep pemrograman
           </p>
         </div>
 
-        <div className="mb-6 flex flex-wrap gap-2">
-          <button
-            onClick={() => setFilter("all")}
-            className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
-              filter === "all"
-                ? "bg-zinc-900 text-white"
-                : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
-            }`}
-          >
-            All {allProblems.length > 0 && `(${allProblems.length})`}
-          </button>
-          <button
-            onClick={() => setFilter("easy")}
-            className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
-              filter === "easy"
-                ? "bg-green-600 text-white"
-                : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
-            }`}
-          >
-            Easy ({allProblems.filter((p) => p.difficulty === "easy").length})
-          </button>
-          <button
-            onClick={() => setFilter("medium")}
-            className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
-              filter === "medium"
-                ? "bg-yellow-600 text-white"
-                : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
-            }`}
-          >
-            Medium (
-            {allProblems.filter((p) => p.difficulty === "medium").length})
-          </button>
-          <button
-            onClick={() => setFilter("hard")}
-            className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
-              filter === "hard"
-                ? "bg-red-600 text-white"
-                : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
-            }`}
-          >
-            Hard ({allProblems.filter((p) => p.difficulty === "hard").length})
-          </button>
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
+          {/* Language Filter Dropdown */}
+          <LanguageDropdown
+            value={language}
+            onChange={(newLanguage) => {
+              setLanguage(newLanguage);
+              setFilter("all");
+            }}
+          />
+
+          {/* Difficulty Filter */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setFilter("all")}
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
+                filter === "all"
+                  ? "bg-zinc-900 text-white"
+                  : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
+              }`}
+            >
+              All {allProblems.length > 0 && `(${allProblems.length})`}
+            </button>
+            <button
+              onClick={() => setFilter("easy")}
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
+                filter === "easy"
+                  ? "bg-green-600 text-white"
+                  : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
+              }`}
+            >
+              Easy ({allProblems.filter((p) => p.difficulty === "easy").length})
+            </button>
+            <button
+              onClick={() => setFilter("medium")}
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
+                filter === "medium"
+                  ? "bg-yellow-600 text-white"
+                  : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
+              }`}
+            >
+              Medium (
+              {allProblems.filter((p) => p.difficulty === "medium").length})
+            </button>
+            <button
+              onClick={() => setFilter("hard")}
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
+                filter === "hard"
+                  ? "bg-red-600 text-white"
+                  : "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
+              }`}
+            >
+              Hard ({allProblems.filter((p) => p.difficulty === "hard").length})
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
