@@ -52,10 +52,10 @@ export async function getAllProblems(): Promise<Problem[]> {
 export async function getProblemsByLanguage(
   language: "c" | "cpp",
 ): Promise<Problem[]> {
+  // Fetch all problems and filter client-side to handle case-insensitivity and null values
   const { data, error } = await supabase
     .from("problems")
     .select("*")
-    .eq("language", language)
     .order("id", { ascending: true });
 
   if (error) {
@@ -63,21 +63,26 @@ export async function getProblemsByLanguage(
     return [];
   }
 
-  return (data || []).map((item: any) => ({
-    id: item.id,
-    title: item.title,
-    timeLimit: item.time_limit,
-    memoryLimit: item.memory_limit,
-    description: item.description,
-    constraints: item.constraints || undefined,
-    input: item.input_desc,
-    output: item.output_desc,
-    difficulty: item.difficulty,
-    language: item.language || "cpp",
-    examples: item.examples || [],
-    solution: item.solution,
-    youtubeLink: item.youtube_link || undefined,
-  }));
+  return (data || [])
+    .filter((item: any) => {
+      const lang = (item.language || "cpp").toLowerCase();
+      return lang === language.toLowerCase();
+    })
+    .map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      timeLimit: item.time_limit,
+      memoryLimit: item.memory_limit,
+      description: item.description,
+      constraints: item.constraints || undefined,
+      input: item.input_desc,
+      output: item.output_desc,
+      difficulty: item.difficulty,
+      language: item.language || "cpp",
+      examples: item.examples || [],
+      solution: item.solution,
+      youtubeLink: item.youtube_link || undefined,
+    }));
 }
 
 export async function getProblemById(id: string): Promise<Problem | null> {
