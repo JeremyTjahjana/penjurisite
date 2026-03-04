@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 
-type LanguageFilter = "c" | "cpp";
+type LanguageFilter = "c" | "cpp" | "java";
 
 interface LanguageDropdownProps {
   value: LanguageFilter;
@@ -16,6 +16,7 @@ export function LanguageDropdown({ value, onChange }: LanguageDropdownProps) {
   const languages: { value: LanguageFilter; label: string }[] = [
     { value: "cpp", label: "C++ Problems" },
     { value: "c", label: "C Problems" },
+    { value: "java", label: "Java Problems" },
   ];
 
   useEffect(() => {
@@ -57,7 +58,13 @@ export function LanguageDropdown({ value, onChange }: LanguageDropdownProps) {
                 value === lang.value
                   ? "bg-zinc-900 text-white font-medium"
                   : "text-zinc-700 hover:bg-zinc-100"
-              } ${lang.value === "cpp" ? "rounded-t-lg" : "rounded-b-lg"}`}
+              } ${
+                lang.value === "cpp"
+                  ? "rounded-t-lg"
+                  : lang.value === "java"
+                    ? "rounded-b-lg"
+                    : ""
+              }`}
             >
               {lang.label}
             </button>
