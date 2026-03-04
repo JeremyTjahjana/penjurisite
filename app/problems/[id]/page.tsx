@@ -8,6 +8,7 @@ import { getProblemById, getProblemsByLanguage, Problem } from "@/lib/problems";
 import { getCommentsByProblem, Comment } from "@/lib/comments";
 import { toast } from "react-hot-toast";
 import { SolutionConfirmationModal } from "@/components/SolutionConfirmationModal";
+import { AuthRequiredModal } from "@/components/AuthRequiredModal";
 import {
   addCommentAction,
   addReplyAction,
@@ -23,6 +24,9 @@ export default function ProblemDetailPage({
   const { user } = useUser();
   const [showSolution, setShowSolution] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState<"solusi" | "hints" | null>(
+    null,
+  );
   const [showHintsSection, setShowHintsSection] = useState(false);
   const [showHints, setShowHints] = useState<Set<number>>(new Set());
   const [copied, setCopied] = useState(false);
@@ -293,6 +297,10 @@ export default function ProblemDetailPage({
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => {
+                if (!user) {
+                  setShowAuthModal("solusi");
+                  return;
+                }
                 if (!showSolution) {
                   setShowConfirmationModal(true);
                 } else {
@@ -302,18 +310,24 @@ export default function ProblemDetailPage({
               className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
                 showSolution
                   ? "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
-                  : "bg-zinc-900 text-white"
+                  : "bg-zinc-900 text-white hover:bg-zinc-800"
               }`}
             >
               {showSolution ? "Sembunyikan Solusi" : "Lihat Solusi"}
             </button>
 
             <button
-              onClick={() => setShowHintsSection(!showHintsSection)}
+              onClick={() => {
+                if (!user) {
+                  setShowAuthModal("hints");
+                  return;
+                }
+                setShowHintsSection(!showHintsSection);
+              }}
               className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
                 showHintsSection
                   ? "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
-                  : "bg-yellow-600 text-white"
+                  : "bg-yellow-600 text-white hover:bg-yellow-700"
               }`}
             >
               Hints (
@@ -338,7 +352,7 @@ export default function ProblemDetailPage({
             />
           )}
 
-          {showHintsSection && !showSolution && (
+          {showHintsSection && !showSolution && user && (
             <div className="mt-6 space-y-2">
               <p className="text-xs font-medium text-zinc-700 md:text-sm">
                 Hints yang tersedia:
@@ -386,7 +400,7 @@ export default function ProblemDetailPage({
             </div>
           )}
 
-          {showSolution && (
+          {showSolution && user && (
             <div className="mt-6">
               <div className="mb-6 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-3 md:p-4">
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
@@ -843,6 +857,14 @@ export default function ProblemDetailPage({
             </div>
           </div>
         </>
+      )}
+
+      {/* Auth Required Modal */}
+      {showAuthModal && (
+        <AuthRequiredModal
+          feature={showAuthModal}
+          onClose={() => setShowAuthModal(null)}
+        />
       )}
     </section>
   );
