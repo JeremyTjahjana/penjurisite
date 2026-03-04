@@ -15,7 +15,7 @@ Penjuri adalah platform online judge untuk praktik soal-soal kompetitif pemrogra
 
 ## Fitur Utama
 
-- ✅ **Problem Listing** - Daftar soal dengan filter berdasarkan kesulitan dan bahasa (C/C++)
+- ✅ **Problem Listing** - Daftar soal dengan filter berdasarkan kesulitan dan bahasa (C/C++/Java)
 - ✅ **Problem Details** - Tampilan lengkap soal dengan deskripsi, batasan, contoh input/output
 - ✅ **Hints System** - Sistem hints (hingga 3 hints) untuk membantu tanpa memberikan solusi langsung
 - ✅ **Solution Protection** - Confirmation modal sebelum melihat solusi dengan pesan dalam bahasa Indonesia
@@ -112,7 +112,7 @@ constraints (text)
 input_desc (text)
 output_desc (text)
 difficulty (easy | medium | hard)
-language (c | cpp)
+language (c | cpp | java)
 examples (jsonb)
 hints (jsonb array)
 solution (text)

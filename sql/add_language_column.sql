@@ -11,4 +11,4 @@ UPDATE public.problems SET language = 'cpp' WHERE language IS NULL;
 
 -- Add constraint to ensure only valid languages are stored
 ALTER TABLE public.problems
-ADD CONSTRAINT valid_language CHECK (language IN ('c', 'cpp'));
+ADD CONSTRAINT valid_language CHECK (language IN ('c', 'cpp', 'java'));

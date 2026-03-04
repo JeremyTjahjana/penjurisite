@@ -10,7 +10,7 @@ export interface Problem {
   input: string;
   output: string;
   difficulty: "easy" | "medium" | "hard";
-  language: "c" | "cpp";
+  language: "c" | "cpp" | "java";
   examples: Array<{
     input: string;
     output: string;
@@ -52,7 +52,7 @@ export async function getAllProblems(): Promise<Problem[]> {
 }
 
 export async function getProblemsByLanguage(
-  language: "c" | "cpp",
+  language: "c" | "cpp" | "java",
 ): Promise<Problem[]> {
   // Fetch all problems and filter client-side to handle case-insensitivity and null values
   const { data, error } = await supabase
