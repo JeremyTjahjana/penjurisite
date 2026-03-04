@@ -12,7 +12,7 @@ import {
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Coding Problems C/C++", href: "/problems" },
+  { label: "Coding Problems", href: "/problems" },
   { label: "Your IPK", href: "/kalkulator-ipk" },
 ];
 

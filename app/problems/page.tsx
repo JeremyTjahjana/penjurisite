@@ -6,7 +6,13 @@ import { LanguageDropdown } from "@/components/LanguageDropdown";
 import { getProblemsByLanguage, Problem } from "@/lib/problems";
 
 type DifficultyFilter = "all" | "easy" | "medium" | "hard";
-type LanguageFilter = "c" | "cpp";
+type LanguageFilter = "c" | "cpp" | "java";
+
+const languageLabel: Record<LanguageFilter, string> = {
+  c: "C",
+  cpp: "C++",
+  java: "Java",
+};
 
 export default function ProblemsPage() {
   const [filter, setFilter] = useState<DifficultyFilter>("all");
@@ -36,10 +42,10 @@ export default function ProblemsPage() {
             Practice
           </p>
           <h1 className="mt-2 text-2xl font-bold text-zinc-900 md:text-3xl">
-            {language === "c" ? "C" : "C++"} Problems
+            {languageLabel[language]} Problems
           </h1>
           <p className="mt-2 text-xs text-zinc-600 md:text-sm">
-            Latihan soal {language === "c" ? "C" : "C++"} untuk meningkatkan
+            Latihan soal {languageLabel[language]} untuk meningkatkan
             pemahaman konsep pemrograman
           </p>
         </div>
