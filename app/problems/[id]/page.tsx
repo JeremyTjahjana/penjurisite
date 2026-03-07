@@ -222,7 +222,9 @@ export default function ProblemDetailPage({
         </h2>
 
         <div className="mb-6 mt-6 border-l-4 border-zinc-500 bg-zinc-50 p-3 font-mono text-xs text-zinc-700 md:p-4 md:text-sm">
-          <div>Time limit: {problem.timeLimit} s</div>
+          <div>
+            Time limit: {problem.timeLimit} {problem.timeLimitUnit === "ms" ? "ms" : "s"}
+          </div>
           <div>Memory limit: {problem.memoryLimit} MB</div>
         </div>
 
