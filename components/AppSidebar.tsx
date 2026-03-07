@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/Sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -18,9 +20,20 @@ const navItems = [
 
 export default function AppSidebar() {
   const { user, isLoaded } = useUser();
+  const isMobile = useIsMobile();
+  const { setOpenMobile } = useSidebar();
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" side={isMobile ? "right" : "left"}>
       <SidebarHeader className="px-5 py-6">
         <div className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-400 group-data-[collapsible=icon]:hidden">
           C/C++
@@ -35,7 +48,16 @@ export default function AppSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-900 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center"
+              onClick={() => {
+                if (isMobile) {
+                  setOpenMobile(false);
+                }
+              }}
+              className={`relative rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-zinc-100 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center after:absolute after:left-3 after:right-3 after:bottom-1 after:h-0.5 after:origin-left after:rounded-full after:bg-zinc-900 after:transition-transform after:duration-300 group-data-[collapsible=icon]:after:hidden ${
+                isActive(item.href)
+                  ? "text-zinc-900 after:scale-x-100"
+                  : "text-zinc-700 hover:text-zinc-900 after:scale-x-0"
+              }`}
               title={item.label}
             >
               <span className="group-data-[collapsible=icon]:hidden">
