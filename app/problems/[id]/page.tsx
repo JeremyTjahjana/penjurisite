@@ -82,6 +82,13 @@ export default function ProblemDetailPage({
     fetchComments();
   }, [normalizedId]);
 
+  useEffect(() => {
+    if (showSolution) {
+      setShowHintsSection(false);
+      setShowHints(new Set());
+    }
+  }, [showSolution]);
+
   if (loading) {
     return (
       <section className="flex flex-1 flex-col bg-zinc-100 px-4 py-6 md:px-10 md:py-12">
@@ -194,6 +201,22 @@ export default function ProblemDetailPage({
     }
   };
 
+  const difficultyBadge =
+    problem.difficulty === "easy"
+      ? {
+        label: "Easy",
+        className: "bg-green-100 text-green-700",
+      }
+      : problem.difficulty === "medium"
+        ? {
+          label: "Difficult",
+          className: "bg-yellow-100 text-yellow-700",
+        }
+        : {
+          label: "Hard",
+          className: "bg-red-100 text-red-700",
+        };
+
   return (
     <section className="flex flex-1 flex-col bg-zinc-100 px-4 py-6 md:px-10 md:py-12">
       <div className="mb-6 flex items-center justify-between gap-2">
@@ -206,11 +229,10 @@ export default function ProblemDetailPage({
         <button
           onClick={handleNextProblem}
           disabled={loading}
-          className={`inline-flex items-center gap-2 text-xs font-medium transition md:text-sm ${
-            nextProblemId
+          className={`inline-flex items-center gap-2 text-xs font-medium transition md:text-sm ${nextProblemId
               ? "text-blue-600 hover:underline"
               : "text-zinc-400 cursor-not-allowed"
-          }`}
+            }`}
         >
           Soal Berikutnya →
         </button>
@@ -226,6 +248,14 @@ export default function ProblemDetailPage({
             Time limit: {problem.timeLimit} {problem.timeLimitUnit === "ms" ? "ms" : "s"}
           </div>
           <div>Memory limit: {problem.memoryLimit} MB</div>
+        </div>
+
+        <div className="mb-6">
+          <span
+            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold md:text-sm ${difficultyBadge.className}`}
+          >
+            {difficultyBadge.label}
+          </span>
         </div>
 
         <div className="space-y-6 text-xs text-zinc-800 md:text-sm">
@@ -309,37 +339,37 @@ export default function ProblemDetailPage({
                   setShowSolution(false);
                 }
               }}
-              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
-                showSolution
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${showSolution
                   ? "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
                   : "bg-zinc-900 text-white hover:bg-zinc-800"
-              }`}
+                }`}
             >
               {showSolution ? "Sembunyikan Solusi" : "Lihat Solusi"}
             </button>
 
-            <button
-              onClick={() => {
-                if (!user) {
-                  setShowAuthModal("hints");
-                  return;
+            {!showSolution && (
+              <button
+                onClick={() => {
+                  if (!user) {
+                    setShowAuthModal("hints");
+                    return;
+                  }
+                  setShowHintsSection(!showHintsSection);
+                }}
+                className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${showHintsSection
+                    ? "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
+                    : "bg-yellow-600 text-white hover:bg-yellow-700"
+                  }`}
+              >
+                Hints (
+                {
+                  (problem.hints || []).filter(
+                    (h) => typeof h === "string" && h.trim() !== "",
+                  ).length
                 }
-                setShowHintsSection(!showHintsSection);
-              }}
-              className={`rounded-lg px-3 py-1 text-xs font-medium transition md:px-4 md:py-1.5 md:text-sm ${
-                showHintsSection
-                  ? "bg-white text-zinc-700 hover:bg-zinc-100 border border-zinc-200"
-                  : "bg-yellow-600 text-white hover:bg-yellow-700"
-              }`}
-            >
-              Hints (
-              {
-                (problem.hints || []).filter(
-                  (h) => typeof h === "string" && h.trim() !== "",
-                ).length
-              }
-              )
-            </button>
+                )
+              </button>
+            )}
           </div>
 
           {showConfirmationModal && (
@@ -404,7 +434,22 @@ export default function ProblemDetailPage({
 
           {showSolution && user && (
             <div className="mt-6">
-              <div className="mb-6 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-3 md:p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
+                  Solusi
+                </h3>
+                <button
+                  onClick={handleCopy}
+                  className={`${copied ? "bg-green-200 hover:bg-green-300" : "bg-zinc-200 hover:bg-zinc-300"} rounded px-3 py-1.5 text-xs font-medium text-zinc-700 transition md:px-4 md:py-2 md:text-sm`}
+                >
+                  {copied ? "✓ Tersalin!" : "Salin Kode"}
+                </button>
+              </div>
+              <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-3 text-xs text-zinc-100 md:p-5 md:text-sm">
+                <code>{problem.solution}</code>
+              </pre>
+
+              <div className="mt-6 mb-6 rounded-lg border-2 border-zinc-200 bg-zinc-50 p-3 md:p-4">
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
                   Video Tutorial
                 </h3>
@@ -473,20 +518,6 @@ export default function ProblemDetailPage({
                 )}
               </div>
 
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900 md:text-base">
-                  Solusi
-                </h3>
-                <button
-                  onClick={handleCopy}
-                  className="rounded bg-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-300 md:px-4 md:py-2 md:text-sm"
-                >
-                  {copied ? "✓ Tersalin!" : "Salin Kode"}
-                </button>
-              </div>
-              <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-3 text-xs text-zinc-100 md:p-5 md:text-sm">
-                <code>{problem.solution}</code>
-              </pre>
             </div>
           )}
         </div>
