@@ -4,8 +4,9 @@ interface ProblemCardProps {
   id: string;
   title: string;
   description: string;
-  timeLimit: string;
-  memoryLimit: string;
+  timeLimit: number;
+  timeLimitUnit?: "s" | "ms";
+  memoryLimit: number;
   difficulty: "easy" | "medium" | "hard";
 }
 
@@ -26,6 +27,7 @@ export default function ProblemCard({
   title,
   description,
   timeLimit,
+  timeLimitUnit,
   memoryLimit,
   difficulty,
 }: ProblemCardProps) {
@@ -47,8 +49,8 @@ export default function ProblemCard({
         </h3>
 
         <div className="mb-3 border-l-2 border-zinc-400 bg-zinc-50 px-3 py-2 font-mono text-[11px] text-zinc-600 md:text-xs">
-          <div>Time: {timeLimit}</div>
-          <div>Memory: {memoryLimit}</div>
+          <div>Time: {timeLimit} {timeLimitUnit === "ms" ? "ms" : "s"}</div>
+          <div>Memory: {memoryLimit} MB</div>
         </div>
 
         <p className="mb-3 line-clamp-2 text-xs text-zinc-600 md:text-sm">

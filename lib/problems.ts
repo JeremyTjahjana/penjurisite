@@ -3,8 +3,9 @@ import { supabase } from "./supabase";
 export interface Problem {
   id: string;
   title: string;
-  timeLimit: string;
-  memoryLimit: string;
+  timeLimit: number;
+  timeLimitUnit?: "s" | "ms";
+  memoryLimit: number;
   description: string;
   constraints?: string;
   input: string;
@@ -37,6 +38,7 @@ export async function getAllProblems(): Promise<Problem[]> {
     id: item.id,
     title: item.title,
     timeLimit: item.time_limit,
+    timeLimitUnit: item.time_limit_unit === "ms" ? "ms" : "s",
     memoryLimit: item.memory_limit,
     description: item.description,
     constraints: item.constraints || undefined,
@@ -74,6 +76,7 @@ export async function getProblemsByLanguage(
       id: item.id,
       title: item.title,
       timeLimit: item.time_limit,
+      timeLimitUnit: item.time_limit_unit === "ms" ? "ms" : "s",
       memoryLimit: item.memory_limit,
       description: item.description,
       constraints: item.constraints || undefined,
@@ -108,6 +111,7 @@ export async function getProblemById(id: string): Promise<Problem | null> {
     id: data.id,
     title: data.title,
     timeLimit: data.time_limit,
+    timeLimitUnit: data.time_limit_unit === "ms" ? "ms" : "s",
     memoryLimit: data.memory_limit,
     description: data.description,
     constraints: data.constraints || undefined,
@@ -156,6 +160,7 @@ export async function createProblem(
     id: data.id,
     title: data.title,
     timeLimit: data.time_limit,
+    timeLimitUnit: data.time_limit_unit === "ms" ? "ms" : "s",
     memoryLimit: data.memory_limit,
     description: data.description,
     constraints: data.constraints || undefined,
@@ -208,6 +213,7 @@ export async function updateProblem(
     id: data.id,
     title: data.title,
     timeLimit: data.time_limit,
+    timeLimitUnit: data.time_limit_unit === "ms" ? "ms" : "s",
     memoryLimit: data.memory_limit,
     description: data.description,
     constraints: data.constraints || undefined,
