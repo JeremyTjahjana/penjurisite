@@ -8,6 +8,7 @@ interface ProblemCardProps {
   timeLimitUnit?: "s" | "ms";
   memoryLimit: number;
   difficulty: "easy" | "medium" | "hard";
+  youtubeLink?: string;
 }
 
 const difficultyStyles = {
@@ -30,8 +31,10 @@ export default function ProblemCard({
   timeLimitUnit,
   memoryLimit,
   difficulty,
+  youtubeLink,
 }: ProblemCardProps) {
   const problemHref = `/problems/${encodeURIComponent(id)}`;
+  const hasYoutube = typeof youtubeLink === "string" && youtubeLink.trim().length > 0;
 
   return (
     <Link href={problemHref}>
@@ -41,6 +44,15 @@ export default function ProblemCard({
             className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase md:text-xs ${difficultyStyles[difficulty]}`}
           >
             {difficultyLabels[difficulty]}
+          </span>
+          <span
+            className={`rounded-full border px-2 py-0.5 text-[11px] font-medium md:text-xs ${
+              hasYoutube
+                ? "border-green-200 bg-green-50 text-green-700"
+                : "border-red-200 bg-zinc-100 text-red-600"
+            }`}
+          >
+            YouTube
           </span>
         </div>
 
