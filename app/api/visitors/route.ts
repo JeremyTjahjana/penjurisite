@@ -3,7 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
-    const today = new Date().toISOString().split("T")[0];
+    const now = new Date();
+    const today = now.toISOString().split("T")[0];
+
+    const startOfWeek = new Date(now);
+    const day = startOfWeek.getDay();
+    const diffToMonday = day === 0 ? 6 : day - 1;
+    startOfWeek.setDate(startOfWeek.getDate() - diffToMonday);
+    startOfWeek.setHours(0, 0, 0, 0);
 
     // Insert a new page view record every time (no unique check)
     const { error: insertError } = await supabase.from("site_stats").insert([
@@ -34,15 +41,11 @@ export async function GET(request: NextRequest) {
 
     if (todayError) throw todayError;
 
-    // Count page views for this week (last 7 days)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const weekStartDate = sevenDaysAgo.toISOString().split("T")[0];
-
+    // Count page views for this week (Monday until now)
     const { count: weekCount, error: weekError } = await supabase
       .from("site_stats")
       .select("*", { count: "exact", head: true })
-      .gte("visited_at", `${weekStartDate}T00:00:00`);
+      .gte("visited_at", startOfWeek.toISOString());
 
     if (weekError) throw weekError;
 
