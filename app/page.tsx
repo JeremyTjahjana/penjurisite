@@ -47,8 +47,8 @@ export default function Home() {
           <ViewProblemsButton />
         </div>
       </section>
-
-      <TotalVisitorsFooter totalVisitors={totalVisitors} loading={loading} />
+      //hide dlu aja
+      {/* <TotalVisitorsFooter totalVisitors={totalVisitors} loading={loading} /> */}
     </>
   );
 }

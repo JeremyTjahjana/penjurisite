@@ -18,10 +18,14 @@ export default function ProblemsPage() {
   const [filter, setFilter] = useState<DifficultyFilter>("all");
   const [language, setLanguage] = useState<LanguageFilter>("cpp");
   const [allProblems, setAllProblems] = useState<Problem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+
+  const ITEMS_PER_PAGE = 9;
 
   useEffect(() => {
     const fetchProblems = async () => {
+      setLoading(true);
       const problems = await getProblemsByLanguage(language);
       setAllProblems(problems);
       setLoading(false);
@@ -34,6 +38,26 @@ export default function ProblemsPage() {
       ? allProblems
       : allProblems.filter((p) => p.difficulty === filter);
 
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredProblems.length / ITEMS_PER_PAGE),
+  );
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedProblems = filteredProblems.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [language, filter]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   return (
     <section className="flex flex-1 flex-col bg-zinc-100 px-4 py-6 md:px-10 md:py-12">
       <div className="mx-auto w-full max-w-7xl">
@@ -45,8 +69,8 @@ export default function ProblemsPage() {
             {languageLabel[language]} Problems
           </h1>
           <p className="mt-2 text-xs text-zinc-600 md:text-sm">
-            Latihan soal {languageLabel[language]} untuk meningkatkan
-            pemahaman konsep pemrograman
+            Latihan soal {languageLabel[language]} untuk meningkatkan pemahaman
+            konsep pemrograman
           </p>
         </div>
 
@@ -131,7 +155,7 @@ export default function ProblemsPage() {
               <p className="text-xs text-zinc-600 md:text-sm">Memuat soal...</p>
             </div>
           ) : filteredProblems.length > 0 ? (
-            filteredProblems.map((problem) => (
+            paginatedProblems.map((problem) => (
               <ProblemCard key={problem.id} {...problem} />
             ))
           ) : (
@@ -142,6 +166,40 @@ export default function ProblemsPage() {
             </div>
           )}
         </div>
+
+        {!loading && filteredProblems.length > ITEMS_PER_PAGE && (
+          <div className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row">
+            <p className="text-xs text-zinc-600 md:text-sm">
+              Menampilkan {startIndex + 1}-
+              {Math.min(startIndex + ITEMS_PER_PAGE, filteredProblems.length)}{" "}
+              dari {filteredProblems.length} soal
+            </p>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              >
+                Previous
+              </button>
+
+              <span className="text-xs text-zinc-600 md:text-sm">
+                Page {currentPage} / {totalPages}
+              </span>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
