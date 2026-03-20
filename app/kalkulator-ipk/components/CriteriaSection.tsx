@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { GradeCriterionItem } from "@/lib/gpa-actions";
+import CriteriaCreateModal from "./CriteriaCreateModal";
 
 interface CriteriaSectionProps {
   gradeCriteria: GradeCriterionItem[];
@@ -23,25 +25,52 @@ export default function CriteriaSection({
   onSubmit,
   onCancel,
 }: CriteriaSectionProps) {
-  return (
-    <div className="rounded-2xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur">
-      <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
-        Kriteria Nilai
-      </h3>
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-      <div className="mt-4 space-y-3">
+  const handleOpenModal = () => {
+    onCancel();
+    setIsModalOpen(true);
+  };
+
+  const handleEditModal = (criterion: GradeCriterionItem) => {
+    onCriteriaEdit(criterion);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    onCancel();
+  };
+
+  const handleModalSubmit = () => {
+    onSubmit();
+    setIsModalOpen(false);
+  };
+
+  return (
+    <div className="space-y-5 border-t border-zinc-200 pt-5">
+      <div>
+        <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          Kriteria Nilai
+        </h3>
+        <p className="mt-2 text-sm text-zinc-600">
+          Tentukan batas huruf mutu untuk mata kuliah aktif.
+        </p>
+      </div>
+
+      <div className="space-y-0">
         {gradeCriteria.length === 0 ? (
-          <p className="text-sm text-zinc-500">
+          <p className="border-b border-zinc-200 py-3 text-sm text-zinc-500">
             Tambahkan bobot nilai untuk A/AB/B/BC dan lainnya.
           </p>
         ) : (
           gradeCriteria.map((criterion) => (
             <div
               key={criterion.id}
-              className="flex items-center justify-between rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2"
+              className="flex items-center justify-between border-b border-zinc-200 py-3"
             >
               <div>
-                <p className="text-sm font-medium text-zinc-800">
+                <p className="text-sm font-medium text-zinc-950">
                   {criterion.letterGrade}
                 </p>
                 <p className="text-xs text-zinc-500">
@@ -50,7 +79,7 @@ export default function CriteriaSection({
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => onCriteriaEdit(criterion)}
+                  onClick={() => handleEditModal(criterion)}
                   className="text-xs text-zinc-600 hover:text-zinc-900"
                 >
                   Edit
@@ -67,52 +96,25 @@ export default function CriteriaSection({
         )}
       </div>
 
-      <div className="mt-5 border-t border-zinc-100 pt-4">
-        <h4 className="text-sm font-semibold text-zinc-800">
-          {criteriaMode === "create" ? "Tambah Kriteria" : "Edit Kriteria"}
-        </h4>
-        <p className="mt-2 text-xs text-zinc-500">
-          A (4.0) • AB (3.5) • B (3.0) • BC (2.5) • C (2.0) • D (1.5) • E (1.0)
-        </p>
-        <div className="mt-3 grid gap-3 md:grid-cols-[120px_1fr]">
-          <select
-            className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-800 focus:outline-none"
-            value={criteriaForm.letterGrade}
-            onChange={(e) => onFormChange({ letterGrade: e.target.value })}
-          >
-            {["A", "AB", "B", "BC", "C", "D", "E"].map((grade) => (
-              <option key={grade} value={grade}>
-                {grade}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-800 focus:outline-none"
-            placeholder="Minimum score"
-            value={criteriaForm.minimumScore}
-            min={0}
-            max={100}
-            onChange={(e) => onFormChange({ minimumScore: e.target.value })}
-          />
-        </div>
-        <div className="mt-3 flex gap-2">
-          <button
-            onClick={onSubmit}
-            className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-          >
-            {criteriaMode === "create" ? "Simpan" : "Perbarui"}
-          </button>
-          {criteriaMode === "edit" && (
-            <button
-              onClick={onCancel}
-              className="rounded-lg border border-zinc-200 px-3 py-2 text-sm"
-            >
-              Batal
-            </button>
-          )}
-        </div>
+      <div className="border-t border-zinc-200 pt-4">
+        <button
+          onClick={handleOpenModal}
+          className="flex items-center justify-center gap-2 rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-950 hover:bg-zinc-50"
+        >
+          <span className="text-lg">+</span> Tambah Kriteria
+        </button>
       </div>
+
+      <CriteriaCreateModal
+        isOpen={isModalOpen}
+        mode={criteriaMode}
+        letterGrade={criteriaForm.letterGrade}
+        minimumScore={criteriaForm.minimumScore}
+        onClose={handleCloseModal}
+        onLetterGradeChange={(value) => onFormChange({ letterGrade: value })}
+        onMinimumScoreChange={(value) => onFormChange({ minimumScore: value })}
+        onSubmit={handleModalSubmit}
+      />
     </div>
   );
 }

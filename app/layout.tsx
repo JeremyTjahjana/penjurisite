@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "C++ Problem Solver",
-  description: "Platform pembelajaran C++ dengan problem solving",
+  title: "Penjurisite-LS",
+  description: "Platform belajar Alpro/Pemrog dan kalkulator IPK",
 };
 
 export default function RootLayout({

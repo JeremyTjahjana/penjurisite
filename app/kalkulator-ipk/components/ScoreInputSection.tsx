@@ -14,24 +14,30 @@ export default function ScoreInputSection({
   onScoreBlur,
 }: ScoreInputSectionProps) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur">
-      <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
-        Input Nilai
-      </h3>
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          Input Nilai
+        </h3>
+        <p className="mt-2 text-sm text-zinc-600">
+          Isi nilai per komponen. Perhitungan akan tersimpan otomatis saat
+          keluar dari input.
+        </p>
+      </div>
 
       {components.length === 0 ? (
-        <p className="mt-4 text-sm text-zinc-500">
+        <p className="border-t border-zinc-200 pt-4 text-sm text-zinc-500">
           Tambahkan komponen terlebih dahulu.
         </p>
       ) : (
-        <div className="mt-4 space-y-3">
+        <div className="space-y-0 border-t border-zinc-200 pt-2">
           {components.map((component) => (
             <div
               key={component.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2"
+              className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 py-3"
             >
               <div>
-                <p className="text-sm font-medium text-zinc-800">
+                <p className="text-sm font-medium text-zinc-950">
                   {component.name}
                 </p>
                 <p className="text-xs text-zinc-500">
@@ -45,7 +51,7 @@ export default function ScoreInputSection({
                 value={scoreInputs[component.id] ?? ""}
                 onChange={(e) => onScoreChange(component.id, e.target.value)}
                 onBlur={() => onScoreBlur(component.id)}
-                className="w-28 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:border-zinc-800 focus:outline-none"
+                className="w-28 border-b border-zinc-300 bg-transparent px-0 py-2 text-sm outline-none focus:border-zinc-950"
                 placeholder="0-100"
               />
             </div>

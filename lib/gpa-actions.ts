@@ -1,6 +1,10 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
+import {
+  getCourseTemplate,
+  type CourseTemplateKey,
+} from "@/lib/course-templates";
 import { supabaseServer } from "@/lib/supabase-server";
 
 export interface Course {
@@ -93,6 +97,39 @@ export async function createCourse(
     sks: data.sks,
     createdAt: data.created_at,
   };
+}
+
+export async function createCourseFromTemplate(
+  templateKey: CourseTemplateKey,
+): Promise<Course | null> {
+  const template = getCourseTemplate(templateKey);
+  if (!template) {
+    console.error("Unknown course template:", templateKey);
+    return null;
+  }
+
+  const createdCourse = await createCourse(template.name, template.sks);
+  if (!createdCourse) {
+    return null;
+  }
+
+  const { error: componentError } = await supabaseServer
+    .from("components")
+    .insert(
+      template.components.map((component) => ({
+        course_id: createdCourse.id,
+        name: component.name,
+        weight: component.weight,
+      })),
+    );
+
+  if (componentError) {
+    console.error("Error creating template components:", componentError);
+    await supabaseServer.from("courses").delete().eq("id", createdCourse.id);
+    return null;
+  }
+
+  return createdCourse;
 }
 
 export async function updateCourse(
