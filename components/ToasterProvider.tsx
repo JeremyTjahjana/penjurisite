@@ -1,11 +1,14 @@
 "use client";
 
 import { Toaster } from "react-hot-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function ToasterProvider() {
+  const isMobile = useIsMobile();
+
   return (
     <Toaster
-      position="top-right"
+      position={isMobile ? "top-left" : "top-center"}
       reverseOrder={false}
       gutter={8}
       containerClassName=""
