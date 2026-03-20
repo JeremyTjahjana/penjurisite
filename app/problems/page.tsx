@@ -8,11 +8,26 @@ import { getProblemsByLanguage, Problem } from "@/lib/problems";
 type DifficultyFilter = "all" | "easy" | "medium" | "hard";
 type LanguageFilter = "c" | "cpp" | "java";
 
+const FILTERS_STORAGE_KEY = "judgels:problems:filters";
+
 const languageLabel: Record<LanguageFilter, string> = {
   c: "C",
   cpp: "C++",
   java: "Java",
 };
+
+function isDifficultyFilter(value: unknown): value is DifficultyFilter {
+  return (
+    value === "all" ||
+    value === "easy" ||
+    value === "medium" ||
+    value === "hard"
+  );
+}
+
+function isLanguageFilter(value: unknown): value is LanguageFilter {
+  return value === "c" || value === "cpp" || value === "java";
+}
 
 export default function ProblemsPage() {
   const [filter, setFilter] = useState<DifficultyFilter>("all");
@@ -20,18 +35,64 @@ export default function ProblemsPage() {
   const [allProblems, setAllProblems] = useState<Problem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const ITEMS_PER_PAGE = 9;
 
   useEffect(() => {
+    try {
+      const savedFilters = sessionStorage.getItem(FILTERS_STORAGE_KEY);
+      if (!savedFilters) {
+        return;
+      }
+
+      const parsed = JSON.parse(savedFilters) as {
+        language?: unknown;
+        filter?: unknown;
+      };
+
+      if (isLanguageFilter(parsed.language)) {
+        setLanguage(parsed.language);
+      }
+
+      if (isDifficultyFilter(parsed.filter)) {
+        setFilter(parsed.filter);
+      }
+    } catch {
+      sessionStorage.removeItem(FILTERS_STORAGE_KEY);
+    } finally {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
     const fetchProblems = async () => {
       setLoading(true);
       const problems = await getProblemsByLanguage(language);
       setAllProblems(problems);
       setLoading(false);
     };
+
     fetchProblems();
-  }, [language]);
+  }, [language, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    sessionStorage.setItem(
+      FILTERS_STORAGE_KEY,
+      JSON.stringify({
+        language,
+        filter,
+      }),
+    );
+  }, [language, filter, isHydrated]);
 
   const filteredProblems =
     filter === "all"
@@ -49,8 +110,12 @@ export default function ProblemsPage() {
   );
 
   useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
     setCurrentPage(1);
-  }, [language, filter]);
+  }, [language, filter, isHydrated]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
